@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>FullNode.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-windowed alectryon-coqdoc"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.13.0+0.13.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> stdpp <span class="kn">Require Import</span> prelude.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> Coq <span class="kn">Require Import</span> FinFun.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> VLSM <span class="kn">Require Import</span> Core.VLSM Core.VLSMProjections Core.Composition.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> VLSM <span class="kn">Require Import</span> Core.Equivocation.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Section</span> <span class="nf">full_node_constraint</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Context</span> {<span class="nv">message</span> : <span class="kt">Type</span>}
+          `{EqDecision message}
+          {index : <span class="kt">Type</span>}
+          {IndEqDec : EqDecision index}
+          (IM : index -&gt; VLSM message)
+          (Free := free_composite_vlsm IM)
+          (has_been_sent_capabilities : <span class="kr">forall</span> <span class="nv">i</span> : index, (HasBeenSentCapability (IM i)))
+          (has_been_received_capabilities : <span class="kr">forall</span> <span class="nv">i</span> : index, (HasBeenReceivedCapability (IM i)))
+          (has_been_observed_capabilities : <span class="kr">forall</span> <span class="nv">i</span> : index, (HasBeenObservedCapability (IM i))
+            := <span class="kr">fun</span> <span class="nv">i</span> =&gt; HasBeenObservedCapability_from_sent_received (IM i))
+          {index_listing : list index}
+          (finite_index : Listing index_listing)
+          (Free_HasBeenSentCapability : HasBeenSentCapability Free := free_composite_HasBeenSentCapability IM finite_index has_been_sent_capabilities)
+          (Free_HasBeenReceivedCapability : HasBeenReceivedCapability Free := free_composite_HasBeenReceivedCapability IM finite_index has_been_received_capabilities)
+          (Free_HasBeenObservedCapability : HasBeenObservedCapability Free := free_composite_HasBeenObservedCapability IM finite_index has_been_observed_capabilities)
+          (admissible_index : composite_state IM -&gt; index -&gt; <span class="kt">Prop</span>)
+          <span class="sd">(** admissible equivocator index: this index can equivocate from given state *)</span>
+          .</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Existing Instance</span> <span class="nf">Free_HasBeenObservedCapability</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Existing Instance</span> <span class="nf">Free_HasBeenSentCapability</span>.</span></span></pre><div class="doc">
+  Given a composite state <code>s</code>, a message <code>m</code>, and a node index <code>i</code>
+  if there is a machine we say that message <code>m</code> can be
+  <span class="inlinecode"><span class="id" title="var">node_generated_without_further_equivocation</span></span> by node <code>i</code> if the message
+  can be produced by node <code>i</code> pre_loaded with all messages in a trace in which
+  all message equivocation is done through messages causing
+  <span class="inlinecode"><span class="id" title="var">no_additional_equivocations</span></span> to state <code>s</code> (message <span class="inlinecode"><span class="id" title="var">has_been_observed</span></span> in <code>s</code>).
+  
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">node_generated_without_further_equivocation</span>
+    (<span class="nv">s</span> : composite_state IM)
+    (<span class="nv">m</span> : message)
+    (<span class="nv">i</span> : index)
+    : <span class="kt">Prop</span>
+    := <span class="kr">exists</span> (<span class="nv">si</span> : vstate (IM i)),
+      can_produce (pre_loaded_with_all_messages_vlsm (IM i)) si m /\
+      state_received_not_sent_invariant (IM i) si (composite_has_been_observed IM has_been_observed_capabilities s).</span></span></pre><div class="doc">
+  Similar to the condition above, but now the message is required to be
+  generated by the machine pre-loaded only with messages causing
+  <span class="inlinecode"><span class="id" title="var">no_additional_equivocations</span></span> to state <code>s</code>.
+  
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">node_generated_without_further_equivocation_alt</span>
+    (<span class="nv">s</span> : composite_state IM)
+    (<span class="nv">m</span> : message)
+    (<span class="nv">i</span> : index)
+    : <span class="kt">Prop</span>
+    := can_emit (pre_loaded_vlsm (IM i) (composite_has_been_observed IM has_been_observed_capabilities s)) m.</span></span></pre><div class="doc">
+  The equivocation-based abstract definition of the full node condition
+  stipulates that a message can be received in a state <code>s</code> if either it causes
+  <span class="inlinecode"><span class="id" title="var">no_additional_equivocations</span></span> to state <code>s</code>, or it can be
+  <span class="inlinecode"><span class="id" title="var">node_generated_without_further_equivocation</span></span> by an admissible node.
+  
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">full_node_condition_for_admissible_equivocators</span>
+    (<span class="nv">l</span> : composite_label IM)
+    (<span class="nv">som</span> : composite_state IM * option message)
+    : <span class="kt">Prop</span>
+    :=
+    <span class="kr">let</span> (<span class="nv">s</span>, om) := som <span class="kr">in</span>
+    <span class="kr">match</span> om <span class="kr">with</span>
+    | None =&gt; <span class="kt">True</span>
+    | Some m =&gt;
+      composite_has_been_observed IM has_been_observed_capabilities s m \/
+      <span class="kr">exists</span> (<span class="nv">i</span> : index), admissible_index s i /\ node_generated_without_further_equivocation s m i
+    <span class="kr">end</span>.</span></span></pre><div class="doc">
+  Similar to the condition above, but using the
+  <span class="inlinecode"><span class="id" title="var">node_generated_without_further_equivocation_alt</span></span> property.
+  
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">full_node_condition_for_admissible_equivocators_alt</span>
+    (<span class="nv">l</span> : composite_label IM)
+    (<span class="nv">som</span> : composite_state IM * option message)
+    : <span class="kt">Prop</span>
+    :=
+    <span class="kr">let</span> (<span class="nv">s</span>, om) := som <span class="kr">in</span>
+    <span class="kr">match</span> om <span class="kr">with</span>
+    | None =&gt; <span class="kt">True</span>
+    | Some m =&gt;
+      composite_has_been_observed IM has_been_observed_capabilities s m \/
+      <span class="kr">exists</span> (<span class="nv">i</span> : index), admissible_index s i /\
+      node_generated_without_further_equivocation_alt s m i
+    <span class="kr">end</span>.</span></span></pre><div class="doc">
+  We here show that if a machine has the <span class="inlinecode"><span class="id" title="var">cannot_resend_message_stepwise_prop</span></span>erty,
+  then the <span class="inlinecode"><span class="id" title="var">node_generated_without_further_equivocation</span></span> property is stronger
+  than the <span class="inlinecode"><span class="id" title="var">node_generated_without_further_equivocation_alt</span></span> property.
+  
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk0" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk0"><span class="kn">Lemma</span> <span class="nf">node_generated_without_further_equivocation_weaken</span>
+    (<span class="nv">i</span> : index)
+    (<span class="nv">Hno_resend</span> : cannot_resend_message_stepwise_prop (IM i))
+    (<span class="nv">s</span>: composite_state IM)
+    (<span class="nv">Hs</span>: valid_state_prop
+       (pre_loaded_with_all_messages_vlsm (free_composite_vlsm IM)) s)
+    (<span class="nv">m</span> : message)
+    (<span class="nv">Hsmi</span> : node_generated_without_further_equivocation s m i)
+    : node_generated_without_further_equivocation_alt s m i.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>composite_state IM</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (free_composite_vlsm IM)) s</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hsmi</var><span class="hyp-type"><b>: </b><span>node_generated_without_further_equivocation s m
+  i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">node_generated_without_further_equivocation_alt s m i</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk1" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk1"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>composite_state IM</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (free_composite_vlsm IM)) s</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hsmi</var><span class="hyp-type"><b>: </b><span>node_generated_without_further_equivocation s m
+  i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">node_generated_without_further_equivocation_alt s m i</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk2" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk2"><span class="nb">destruct</span> Hsmi <span class="kr">as</span> [si [Hsim Hsi]].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>composite_state IM</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (free_composite_vlsm IM)) s</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>si</var><span class="hyp-type"><b>: </b><span>vstate (IM i)</span></span></span><br><span><var>Hsim</var><span class="hyp-type"><b>: </b><span>can_produce
+  (pre_loaded_with_all_messages_vlsm (IM i)) si
+  m</span></span></span><br><span><var>Hsi</var><span class="hyp-type"><b>: </b><span>state_received_not_sent_invariant 
+  (IM i) si
+  (composite_has_been_observed IM
+     has_been_observed_capabilities s)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">node_generated_without_further_equivocation_alt s m i</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk3" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk3"><span class="nb">apply</span> can_emit_iff.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>composite_state IM</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (free_composite_vlsm IM)) s</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>si</var><span class="hyp-type"><b>: </b><span>vstate (IM i)</span></span></span><br><span><var>Hsim</var><span class="hyp-type"><b>: </b><span>can_produce
+  (pre_loaded_with_all_messages_vlsm (IM i)) si
+  m</span></span></span><br><span><var>Hsi</var><span class="hyp-type"><b>: </b><span>state_received_not_sent_invariant 
+  (IM i) si
+  (composite_has_been_observed IM
+     has_been_observed_capabilities s)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∃</span> <span class="nv">s0</span> : state,
+  can_produce
+    (pre_loaded_vlsm (IM i)
+       (composite_has_been_observed IM
+          has_been_observed_capabilities s)) s0 m</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk4" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk4"><span class="kr">exists</span> <span class="nv">si</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>composite_state IM</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (free_composite_vlsm IM)) s</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>si</var><span class="hyp-type"><b>: </b><span>vstate (IM i)</span></span></span><br><span><var>Hsim</var><span class="hyp-type"><b>: </b><span>can_produce
+  (pre_loaded_with_all_messages_vlsm (IM i)) si
+  m</span></span></span><br><span><var>Hsi</var><span class="hyp-type"><b>: </b><span>state_received_not_sent_invariant 
+  (IM i) si
+  (composite_has_been_observed IM
+     has_been_observed_capabilities s)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">can_produce
+  (pre_loaded_vlsm (IM i)
+     (composite_has_been_observed IM
+        has_been_observed_capabilities s)) si m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk5" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk5"><span class="nb">revert</span> Hsim.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>composite_state IM</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (free_composite_vlsm IM)) s</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>si</var><span class="hyp-type"><b>: </b><span>vstate (IM i)</span></span></span><br><span><var>Hsi</var><span class="hyp-type"><b>: </b><span>state_received_not_sent_invariant 
+  (IM i) si
+  (composite_has_been_observed IM
+     has_been_observed_capabilities s)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">can_produce (pre_loaded_with_all_messages_vlsm (IM i))
+  si m
+→ can_produce
+    (pre_loaded_vlsm (IM i)
+       (composite_has_been_observed IM
+          has_been_observed_capabilities s)) si m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> lift_generated_to_seeded <span class="kr">with</span> (has_been_sent_capabilities i)  (has_been_received_capabilities i)
+    ; <span class="bp">assumption</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span></span></pre><div class="doc">
+if all machines satisty the <span class="inlinecode"><span class="id" title="var">cannot_resend_message_stepwise_prop</span></span>erty,
+  then the <span class="inlinecode"><span class="id" title="var">full_node_condition_for_admissible_equivocators</span></span> is stronger than
+  the <span class="inlinecode"><span class="id" title="var">full_node_condition_for_admissible_equivocators_alt</span></span>.
+  
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk6" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk6"><span class="kn">Lemma</span> <span class="nf">full_node_condition_for_admissible_equivocators_subsumption</span>
+    (<span class="nv">Hno_resend</span> : <span class="kr">forall</span> <span class="nv">i</span> : index, cannot_resend_message_stepwise_prop (IM i))
+    : preloaded_constraint_subsumption IM
+        full_node_condition_for_admissible_equivocators
+        full_node_condition_for_admissible_equivocators_alt.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  cannot_resend_message_stepwise_prop
+    (IM i)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">preloaded_constraint_subsumption IM
+  full_node_condition_for_admissible_equivocators
+  full_node_condition_for_admissible_equivocators_alt</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk7" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk7"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  cannot_resend_message_stepwise_prop
+    (IM i)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">preloaded_constraint_subsumption IM
+  full_node_condition_for_admissible_equivocators
+  full_node_condition_for_admissible_equivocators_alt</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk8" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk8"><span class="nb">intros</span> l (s, [m|]) [Hs [_ [_ Hc]]]; [|<span class="bp">exact</span> I].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  cannot_resend_message_stepwise_prop
+    (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  s</span></span></span><br><span><var>Hc</var><span class="hyp-type"><b>: </b><span>full_node_condition_for_admissible_equivocators l
+  (s, Some m)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">full_node_condition_for_admissible_equivocators_alt l
+  (s, Some m)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk9" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk9"><span class="nb">destruct</span> Hc <span class="kr">as</span> [Hno_equiv | Hfull]; [<span class="nb">left</span>; <span class="bp">assumption</span>|].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  cannot_resend_message_stepwise_prop
+    (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  s</span></span></span><br><span><var>Hfull</var><span class="hyp-type"><b>: </b><span><span class="kr">∃</span> <span class="nv">i</span> : index,
+  admissible_index s i
+  ∧ node_generated_without_further_equivocation
+      s m i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">full_node_condition_for_admissible_equivocators_alt l
+  (s, Some m)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chka" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chka"><span class="nb">right</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  cannot_resend_message_stepwise_prop
+    (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  s</span></span></span><br><span><var>Hfull</var><span class="hyp-type"><b>: </b><span><span class="kr">∃</span> <span class="nv">i</span> : index,
+  admissible_index s i
+  ∧ node_generated_without_further_equivocation
+      s m i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∃</span> <span class="nv">i</span> : index,
+  admissible_index s i
+  ∧ node_generated_without_further_equivocation_alt s
+      m i</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chkb" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chkb"><span class="nb">destruct</span> Hfull <span class="kr">as</span> [i [Hi Hfull]].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  cannot_resend_message_stepwise_prop
+    (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  s</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>admissible_index s i</span></span></span><br><span><var>Hfull</var><span class="hyp-type"><b>: </b><span>node_generated_without_further_equivocation s
+  m i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∃</span> <span class="nv">i</span> : index,
+  admissible_index s i
+  ∧ node_generated_without_further_equivocation_alt s
+      m i</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chkc" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chkc"><span class="kr">exists</span> <span class="nv">i</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  cannot_resend_message_stepwise_prop
+    (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  s</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>admissible_index s i</span></span></span><br><span><var>Hfull</var><span class="hyp-type"><b>: </b><span>node_generated_without_further_equivocation s
+  m i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">admissible_index s i
+∧ node_generated_without_further_equivocation_alt s m
+    i</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chkd" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chkd"><span class="nb">split</span>; [<span class="bp">assumption</span>|].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  cannot_resend_message_stepwise_prop
+    (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  s</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>admissible_index s i</span></span></span><br><span><var>Hfull</var><span class="hyp-type"><b>: </b><span>node_generated_without_further_equivocation s
+  m i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">node_generated_without_further_equivocation_alt s m i</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chke" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chke"><span class="nb">specialize</span> (Hno_resend i).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  s</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>admissible_index s i</span></span></span><br><span><var>Hfull</var><span class="hyp-type"><b>: </b><span>node_generated_without_further_equivocation s
+  m i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">node_generated_without_further_equivocation_alt s m i</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chkf" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chkf"><span class="nb">apply</span> node_generated_without_further_equivocation_weaken; [<span class="bp">assumption</span>| |<span class="bp">assumption</span>].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  s</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>admissible_index s i</span></span></span><br><span><var>Hfull</var><span class="hyp-type"><b>: </b><span>node_generated_without_further_equivocation s
+  m i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (free_composite_vlsm IM)) s</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk10" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk10"><span class="nb">revert</span> Hs.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>admissible_index s i</span></span></span><br><span><var>Hfull</var><span class="hyp-type"><b>: </b><span>node_generated_without_further_equivocation s
+  m i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  s
+→ valid_state_prop
+    (pre_loaded_with_all_messages_vlsm
+       (free_composite_vlsm IM)) s</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="FullNode-v-chk11" style="display: none" type="checkbox"><label class="alectryon-input" for="FullNode-v-chk11"><span class="nb">apply</span> VLSM_incl_valid_state.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>EqDecision0</var><span class="hyp-type"><b>: </b><span>EqDecision message</span></span></span><br><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>IndEqDec</var><span class="hyp-type"><b>: </b><span>EqDecision index</span></span></span><br><span><var>IM</var><span class="hyp-type"><b>: </b><span>index → VLSM message</span></span></span><br><span><var>Free</var><span><span class="hyp-body"><b>:= </b><span>free_composite_vlsm IM</span></span><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span></span><br><span><var>has_been_sent_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  HasBeenSentCapability
+    (IM i)</span></span></span><br><span><var>has_been_received_capabilities</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenReceivedCapability (IM i)</span></span></span><br><span><var>has_been_observed_capabilities</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">λ</span> <span class="nv">i</span> : index,
+  HasBeenObservedCapability_from_sent_received
+    (IM i)</span></span><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index, HasBeenObservedCapability (IM i)</span></span></span></span><br><span><var>index_listing</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>finite_index</var><span class="hyp-type"><b>: </b><span>Listing index_listing</span></span></span><br><span><var>Free_HasBeenSentCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenSentCapability
+  IM finite_index
+  has_been_sent_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenSentCapability
+  Free</span></span></span></span><br><span><var>Free_HasBeenReceivedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenReceivedCapability
+  IM finite_index
+  has_been_received_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenReceivedCapability Free</span></span></span></span><br><span><var>Free_HasBeenObservedCapability</var><span><span class="hyp-body"><b>:= </b><span>free_composite_HasBeenObservedCapability
+  IM finite_index
+  has_been_observed_capabilities</span></span><span class="hyp-type"><b>: </b><span>HasBeenObservedCapability Free</span></span></span></span><br><span><var>admissible_index</var><span class="hyp-type"><b>: </b><span>composite_state IM → index → <span class="kt">Prop</span></span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hno_resend</var><span class="hyp-type"><b>: </b><span>cannot_resend_message_stepwise_prop
+  (IM i)</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>composite_label IM</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>admissible_index s i</span></span></span><br><span><var>Hfull</var><span class="hyp-type"><b>: </b><span>node_generated_without_further_equivocation s
+  m i</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">VLSM_incl_part
+  (pre_loaded_with_all_messages_vlsm_machine
+     (composite_vlsm IM
+        full_node_condition_for_admissible_equivocators))
+  (pre_loaded_with_all_messages_vlsm_machine
+     (free_composite_vlsm IM))</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> preloaded_constraint_free_incl.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">End</span> <span class="nf">full_node_constraint</span>.</span></span></pre></article></body></html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"><script>document.write(document.title)</script></span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div id="toc">
+<ul class="doclist">
+<li><a href="VLSM.Lib.Preamble.html#lab1">General utility definitions, lemmas, and tactics</a>
+
+</li>
+<li><a href="VLSM.Lib.SsrExport.html#lab2">SSReflect exports</a>
+
+</li>
+<li><a href="VLSM.Lib.ListExtras.html#lab3">Utility lemmas about lists</a>
+<ul class="doclist">
+<li><a href="VLSM.Lib.ListExtras.html#lab4">Quantifiers for all suffixes</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Lib.ListSetExtras.html#lab5">List set utility definitions and lemmas</a>
+
+</li>
+<li><a href="VLSM.Lib.SortedLists.html#lab6">Sorted list utility functions and lemmas</a>
+
+</li>
+<li><a href="VLSM.Lib.FinExtras.html#lab7">Finite type utility definitions and lemmas</a>
+
+</li>
+<li><a href="VLSM.Lib.FinFunExtras.html#lab8">Finite function utility definitions and lemmas</a>
+
+</li>
+<li><a href="VLSM.Lib.RealsExtras.html#lab9">Real number utility lemmas</a>
+
+</li>
+<li><a href="VLSM.Lib.TopSort.html#lab10">Topological sorting implementation</a>
+<ul class="doclist">
+<li><a href="VLSM.Lib.TopSort.html#lab11">Finding an element with a minimal number of predecessors</a>
+
+</li>
+<li><a href="VLSM.Lib.TopSort.html#lab12">Topologically sorted lists. Definition and properties.</a>
+
+</li>
+<li><a href="VLSM.Lib.TopSort.html#lab13">The topological sorting algorithm</a>
+
+</li>
+<li><a href="VLSM.Lib.TopSort.html#lab14">Maximal elements</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Lib.StreamExtras.html#lab15">Stream utility definitions and lemmas</a>
+<ul class="doclist">
+<li><a href="VLSM.Lib.StreamFilters.html#lab16">Obtaining <span class="inlinecode"><span class="id" title="var">filtering_sequences</span></span> for streams</a>
+
+</li>
+<li><a href="VLSM.Lib.StreamFilters.html#lab17">Mapping a partial function on a stream</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Lib.Traces.html#lab18">Definition of possibly-infinite traces</a>
+<ul class="doclist">
+<li><a href="VLSM.Lib.Traces.html#lab19">Core trace definition and decomposition</a>
+
+</li>
+<li><a href="VLSM.Lib.Traces.html#lab20">Bisimulations between traces</a>
+
+</li>
+<li><a href="VLSM.Lib.Traces.html#lab21">Appending traces to one another</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab22">Core properties of possibly-infinite traces</a>
+<ul class="doclist">
+<li><a href="VLSM.Lib.TraceProperties.html#lab23">Infiniteness property</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab24">Finiteness property</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab25">Final element properties</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab26">Basic trace properties and connectives</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab27">Basic trace element properties and connectives</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab28">Singleton property</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab29">Duplicate element property</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab30">Follows property</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab31">Append property</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab32">Iteration property</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab33">Last property</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab34">Midpoint property</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceProperties.html#lab35">Trace property operators and notations</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Lib.TraceClassicalProperties.html#lab36">Properties of possibly-infinite traces requiring classical logic</a>
+<ul class="doclist">
+<li><a href="VLSM.Lib.TraceClassicalProperties.html#lab37">Relating finiteness and infiniteness</a>
+
+</li>
+<li><a href="VLSM.Lib.TraceClassicalProperties.html#lab38">Using midpoints to show the right associativity of the append property</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Lib.Measurable.html#lab39">Measure-related definitions and lemmas</a>
+
+</li>
+<li><a href="VLSM.Lib.FinSetExtras.html#lab40">Finite set utility definitions and lemmas</a>
+
+</li>
+<li><a href="VLSM.Core.VLSM.html#lab41">VLSM Basics</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.VLSM.html#lab42">VLSM definition</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.VLSM.html#lab43">The type of a VLSM</a>
+
+</li>
+<li><a href="VLSM.Core.VLSM.html#lab44">The signature of a VLSM</a>
+
+</li>
+<li><a href="VLSM.Core.VLSM.html#lab45">VLSM class definition</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.VLSM.html#lab46">Traces</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.VLSM.html#lab47">Valid states and messages</a>
+
+</li>
+<li><a href="VLSM.Core.VLSM.html#lab48">Input validity and input valid transitions</a>
+
+</li>
+<li><a href="VLSM.Core.VLSM.html#lab49">valid state and valid message characterization</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.VLSM.html#lab50">Trace Properties</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.VLSM.html#lab51">Finite <span class="inlinecode"><span class="id" title="var">valid_trace</span></span>s</a>
+
+</li>
+<li><a href="VLSM.Core.VLSM.html#lab52">Pre-loaded VLSMs</a>
+
+</li>
+<li><a href="VLSM.Core.VLSM.html#lab53">Properties of provably-equal VLSMs</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Composition.html#lab54">VLSM Composition</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Composition.html#lab55">The type of a composite VLSM</a>
+
+</li>
+<li><a href="VLSM.Core.Composition.html#lab56">The signature of a composite VLSM</a>
+
+</li>
+<li><a href="VLSM.Core.Composition.html#lab57">Constrained VLSM composition</a>
+
+</li>
+<li><a href="VLSM.Core.Composition.html#lab58">Free VLSM composition</a>
+
+</li>
+<li><a href="VLSM.Core.Composition.html#lab59">Constraint subsumption</a>
+
+</li>
+<li><a href="VLSM.Core.Composition.html#lab60">Free composition of two VLSMs</a>
+
+</li>
+<li><a href="VLSM.Core.Composition.html#lab61">Composite decidable initial message</a>
+
+</li>
+<li><a href="VLSM.Core.Composition.html#lab62">Composite Plan Properties</a>
+
+</li>
+<li><a href="VLSM.Core.Composition.html#lab63">Properties of extensionally-equal indexed compositions</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Plans.html#lab64">VLSM Plans</a>
+
+</li>
+<li><a href="VLSM.Core.VLSMProjections.html#lab65">VLSM (partial) projections and inclusions</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.VLSMProjections.html#lab66">VLSM partial projections</a>
+
+</li>
+<li><a href="VLSM.Core.VLSMProjections.html#lab67">VLSM (total) projections</a>
+
+</li>
+<li><a href="VLSM.Core.VLSMProjections.html#lab68">Projection Friendliness</a>
+
+</li>
+<li><a href="VLSM.Core.VLSMProjections.html#lab69">VLSM full projections</a>
+
+</li>
+<li><a href="VLSM.Core.VLSMProjections.html#lab70">VLSM Inclusion and Equality</a>
+
+</li>
+<li><a href="VLSM.Core.VLSMProjections.html#lab71">Induced <span class="inlinecode"><span class="id" title="var">VLSM_projection</span></span>s</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Validator.html#lab72">VLSM Projection Validators</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Validator.html#lab73">Projection validators and Byzantine behavior</a>
+
+</li>
+<li><a href="VLSM.Core.Validator.html#lab74">VLSM self-validation</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Decisions.html#lab75">VLSM Decisions on Consensus Values</a>
+
+</li>
+<li><a href="VLSM.Core.MessageDependencies.html#lab76">VLSM Message Dependencies</a>
+
+</li>
+<li><a href="VLSM.Core.ProjectionTraces.html#lab77">Composite VLSM projections</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.ProjectionTraces.html#lab78">VLSM Projection Traces</a>
+
+</li>
+<li><a href="VLSM.Core.ProjectionTraces.html#lab79">Projections of Free composition of two VLSMs</a>
+
+</li>
+<li><a href="VLSM.Core.ProjectionTraces.html#lab80">Projection traces are Byzantine</a>
+
+</li>
+<li><a href="VLSM.Core.ProjectionTraces.html#lab81">A sufficient condition for the <span class="inlinecode"><span class="id" title="var">projection_friendly_prop</span></span>erty.</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.SubProjectionTraces.html#lab82">VLSM Subcomposition</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.SubProjectionTraces.html#lab83">Lifting a trace from a sub-composition to the full composition</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.SubProjectionTraces.html#lab84">Sender and sender-safety specialized for the subcomposition</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.SubProjectionTraces.html#lab85">No-equivocation results for sub-composition</a>
+
+</li>
+<li><a href="VLSM.Core.SubProjectionTraces.html#lab86">A subcomposition with all the components</a>
+
+</li>
+<li><a href="VLSM.Core.SubProjectionTraces.html#lab87">A subcomposition with no components</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.html#lab88">VLSM Equivocation Definitions</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocation.html#lab89">Basic equivocation</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocation.html#lab90">State-message oracles and endowing states with history</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.html#lab91">Stepwise consistency properties for <span class="inlinecode"><span class="id" title="var">state_message_oracle</span></span></a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.html#lab92">Stepwise view of <span class="inlinecode"><span class="id" title="var">HasBeenSentCapability</span></span></a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.html#lab93">Stepwise view of <span class="inlinecode"><span class="id" title="var">HasBeenReceivedCapability</span></span></a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.html#lab94">A state message oracle for messages sent or received</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocation.html#lab95">Equivocation in compositions</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.EquivocationProjections.html#lab96">VLSM projections and messages properties</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.EquivocationProjections.html#lab97"><span class="inlinecode"><span class="id" title="var">VLSM_projection</span></span>s reflect message properties</a>
+
+</li>
+<li><a href="VLSM.Core.EquivocationProjections.html#lab98"><span class="inlinecode"><span class="id" title="var">VLSM_weak_full_projection</span></span>s preserve message properties</a>
+
+</li>
+<li><a href="VLSM.Core.EquivocationProjections.html#lab99"><span class="inlinecode"><span class="id" title="var">VLSM_full_projection</span></span>s both preserve and reflect message properties</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.NoEquivocation.html#lab100">VLSM No Equivocation Composition Constraints</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocation.NoEquivocation.html#lab101">No-Equivocation Invariants</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.NoEquivocation.html#lab102">Composite No-Equivocation Invariants</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.NoEquivocation.html#lab103">Pre-loading a VLSM composition with no equivocations constraint</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.FixedSetEquivocation.html#lab104">Fixed Set Equivocation</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocation.FixedSetEquivocation.html#lab105">A (seemingly) stronger definition for fixed-set equivocation</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.FixedSetEquivocation.html#lab106">Extending the set of nodes allowed to equivocate</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.FixedSetEquivocation.html#lab107">Restricting Fixed valid traces to only the equivocators</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.FixedSetEquivocation.html#lab108">Changing the behavior of equivocators within a trace</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocation.FixedSetEquivocation.html#lab109">Main result of the section</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.FixedSetEquivocation.html#lab110">Fixed equivocation over an empty set</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.TraceWiseEquivocation.html#lab111">VLSM Trace-wise Equivocation</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.WitnessedEquivocation.html#lab112">Witnessed equivocation</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocation.WitnessedEquivocation.html#lab113">Strongly witnessed equivocation</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.WitnessedEquivocation.html#lab114">Witnessed equivocation and fixed-set equivocation</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocation.WitnessedEquivocation.html#lab115">Main result of the section</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.LimitedEquivocation.html#lab116">VLSM Limited Message Equivocation</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocation.LimitedEquivocation.html#lab117">Fixed Message Equivocation implies Limited Message Equivocation</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocation.LimitedEquivocation.html#lab118">Limited Equivocation derived from Fixed Equivocation</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Common.html#lab119">VLSM Equivocation</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Projections.html#lab120">VLSM Projecting Equivocator Traces</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.MessageProperties.html#lab121">VLSM Message Properties</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocators.MessageProperties.html#lab122">Lifting properties about sent messages to the equivocators</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.MessageProperties.html#lab123">Lifting the <span class="inlinecode"><span class="id" title="var">HasBeenReceivedCapability</span></span></a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.MessageProperties.html#lab124">Lifting the <span class="inlinecode"><span class="id" title="var">HasBeenSentCapability</span></span></a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.MessageProperties.html#lab125">Lifting the <span class="inlinecode"><span class="id" title="var">ComputableSentMessages</span></span> property</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.EquivocatorReplay.html#lab126">Equivocator State Append Determines a Projection</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.Common.html#lab127">VLSM Equivocator Composition</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocators.Composition.Common.html#lab128">Extracting equivocator traces from equivocator composition traces</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.Projections.html#lab129">VLSM Equivocator Composition Projections</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.SimulatingFree.FullReplayTraces.html#lab130">VLSM Equivocator Full Replay Traces</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.SimulatingFree.SimulatingFree.html#lab131">Equivocators simulating regular nodes</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocators.Composition.SimulatingFree.SimulatingFree.html#lab132">Generic simulation</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.SimulatingFree.SimulatingFree.html#lab133">VLSM Equivocators Simulating Free Composite</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.LimitedEquivocation.FixedEquivocation.html#lab134">VLSM Equivocators Fixed Equivocation</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocators.Composition.LimitedEquivocation.FixedEquivocation.html#lab135">From composition of equivocators to composition of simple nodes</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.LimitedEquivocation.FixedEquivocation.html#lab136">Fixed Equivocation for all Equivocators</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.LimitedEquivocation.FixedEquivocationSimulation.html#lab137">VLSM Equivocators Simulating fixed-set equivocation composition</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.Equivocators.Composition.LimitedEquivocation.FixedEquivocationSimulation.html#lab138">The main result</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.LimitedEquivocation.FixedEquivocationSimulation.html#lab139">No-equivocation simulation as a particular case of fixed-set simulation</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.LimitedEquivocation.LimitedEquivocation.html#lab140">VLSM Limited Equivocation</a>
+
+</li>
+<li><a href="VLSM.Core.Equivocators.Composition.LimitedEquivocation.LimitedEquivocationSimulation.html#lab141">VLSM Equivocators Simulating limited message equivocation traces</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.html#lab142">VLSM Byzantine Traces</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.ByzantineTraces.html#lab143">Definition and basic properties</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.html#lab144">An alternative definition</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.html#lab145">Equivalence between the two Byzantine trace definitions</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.html#lab146">Byzantine fault tolerance for a single validator</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.html#lab147">Byzantine fault tolerance for a composition of validators</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.FixedSetByzantineTraces.html#lab148">VLSM Compositions with a fixed set of byzantine nodes</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.ByzantineTraces.FixedSetByzantineTraces.html#lab149">A machine which can emit any valid message for a given node</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.FixedSetByzantineTraces.html#lab150">Byzantine traces characterization as projections.</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.FixedSetByzantineTraces.html#lab151">Fixed Byzantine traces as traces pre-loaded with signed messages</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.FixedSetByzantineTraces.html#lab152">Relation between Byzantine nodes and equivocators</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.FixedSetByzantineTraces.html#lab153">The main result</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.LimitedByzantineTraces.html#lab154">VLSM Compositions with byzantine nodes of limited weight</a>
+<ul class="doclist">
+<li><a href="VLSM.Core.ByzantineTraces.LimitedByzantineTraces.html#lab155">Assuming the byzantine nodes are known</a>
+
+</li>
+<li><a href="VLSM.Core.ByzantineTraces.LimitedByzantineTraces.html#lab156">The main result</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>

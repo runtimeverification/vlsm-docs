@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>MessageDependencies.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-windowed alectryon-coqdoc"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.13.0+0.13.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> stdpp <span class="kn">Require Import</span> prelude.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> Coq <span class="kn">Require Import</span> FinFun.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> VLSM <span class="kn">Require Import</span> Lib.Preamble Lib.StdppListSet Lib.Measurable.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> VLSM <span class="kn">Require Import</span> Core.VLSM Core.Composition Core.Equivocation.</span></span></pre><div class="doc">
+<a id="lab1"></a><h1 class="section">VLSM Message Dependencies</h1>
+<div class="paragraph"> </div>
+
+An abstract framework for the full-node condition.
+Assumes that each message has an associated set of <span class="inlinecode"><span class="id" title="var">message_dependencies</span></span>.
+
+<div class="paragraph"> </div>
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Section</span> <span class="nf">message_dependencies</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Context</span>
+  {<span class="nv">message</span> : <span class="kt">Type</span>}
+  (<span class="nv">message_dependencies</span> : message -&gt; <span class="nb">set</span> message)
+  (<span class="nv">X</span> : VLSM message)
+  {<span class="nv">Hbo</span> : HasBeenObservedCapability X}
+  .</span></span></pre><div class="doc">
+<span class="inlinecode"><span class="id" title="var">MessageDependencies</span></span> characterize a <code>message_dependencies</code> function
+through two properties:
+
+<div class="paragraph"> </div>
+<ul class="doclist">
+<li> Necessity: All dependent messeges for a message <code>m</code>m are required to be
+
+</li>
+</ul>
+observed by any state emitting the message <code>m</code>.
+
+<div class="paragraph"> </div>
+<ul class="doclist">
+<li> Sufficiency: A message can be produced by the machine pre-loaded with its
+
+</li>
+</ul>
+dependencies.
+
+<div class="paragraph"> </div>
+
+Together with <span class="inlinecode"><span class="id" title="var">message_dependencies_full_node_condition_prop</span></span>, it
+constitutes the <i>full node assumption</i>.
+
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Class</span> <span class="nf">MessageDependencies</span>
+  :=
+  { message_dependencies_are_necessary (m : message)
+      `(can_produce (pre_loaded_with_all_messages_vlsm X) s m)
+      : <span class="kr">forall</span> (<span class="nv">dm</span> : message),
+        dm ∈ message_dependencies m -&gt;
+        has_been_observed X s dm
+  ; message_dependencies_are_sufficient (m : message)
+      `(can_emit (pre_loaded_with_all_messages_vlsm X) m)
+      : can_emit (pre_loaded_vlsm X (<span class="kr">fun</span> <span class="nv">msg</span> =&gt; msg ∈ message_dependencies m)) m
+  }.</span></span></pre><div class="doc">
+The (local) full node condition for a given <code>message_dependencies</code> function
+requires that a state (receiving the message) has previously
+observed all of <code>m</code>'s dependencies.
+
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">message_dependencies_full_node_condition</span>
+  (<span class="nv">s</span> : vstate X)
+  (<span class="nv">m</span> : message)
+  : <span class="kt">Prop</span>
+  := <span class="kr">forall</span> <span class="nv">dm</span>, dm ∈ message_dependencies m -&gt;
+    has_been_observed X s dm.</span></span></pre><div class="doc">
+A VLSM has the <span class="inlinecode"><span class="id" title="var">message_dependencies_full_node_condition_prop</span></span>
+if the validity of receiving a message in a state implies the
+<span class="inlinecode"><span class="id" title="var">message_dependencies_full_node_condition</span></span> for that state and message
+
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">message_dependencies_full_node_condition_prop</span> : <span class="kt">Prop</span> :=
+  <span class="kr">forall</span> <span class="nv">l</span> <span class="nv">s</span> <span class="nv">m</span>,
+  vvalid X l (s, Some m) -&gt; message_dependencies_full_node_condition s m.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">End</span> <span class="nf">message_dependencies</span>.</span></span></pre></article></body></html>

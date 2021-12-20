@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"><script>document.write(document.title)</script></span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">stdpp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">prelude</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Coq</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#"><span class="id" title="library">FinFun</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">VLSM</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="VLSM.Lib.Preamble.html#"><span class="id" title="library">Lib.Preamble</span></a> <a class="idref" href="VLSM.Lib.StdppListSet.html#"><span class="id" title="library">Lib.StdppListSet</span></a> <a class="idref" href="VLSM.Lib.Measurable.html#"><span class="id" title="library">Lib.Measurable</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">VLSM</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="VLSM.Core.VLSM.html#"><span class="id" title="library">Core.VLSM</span></a> <a class="idref" href="VLSM.Core.Composition.html#"><span class="id" title="library">Core.Composition</span></a> <a class="idref" href="VLSM.Core.Equivocation.html#"><span class="id" title="library">Core.Equivocation</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab76"></a><h1 class="section">VLSM Message Dependencies</h1>
+
+
+<div class="paragraph"> </div>
+
+An abstract framework for the full-node condition.
+Assumes that each message has an associated set of <span class="inlinecode"><a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies"><span class="id" title="section">message_dependencies</span></a></span>.
+
+<div class="paragraph"> </div>
+
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="message_dependencies" class="idref" href="#message_dependencies"><span class="id" title="section">message_dependencies</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;{<a id="message:1" class="idref" href="#message:1"><span class="id" title="binder">message</span></a> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<a id="message_dependencies:2" class="idref" href="#message_dependencies:2"><span class="id" title="binder">message_dependencies</span></a> : <a class="idref" href="VLSM.Core.MessageDependencies.html#message:1"><span class="id" title="variable">message</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.StdppListSet.html#set"><span class="id" title="definition">set</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#message:1"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;(<a id="X:3" class="idref" href="#X:3"><span class="id" title="binder">X</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#VLSM"><span class="id" title="definition">VLSM</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#message:1"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;{<a id="Hbo:4" class="idref" href="#Hbo:4"><span class="id" title="binder">Hbo</span></a> : <a class="idref" href="VLSM.Core.Equivocation.html#HasBeenObservedCapability"><span class="id" title="class">HasBeenObservedCapability</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#X:3"><span class="id" title="variable">X</span></a>}<br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><a class="idref" href="VLSM.Core.MessageDependencies.html#MessageDependencies"><span class="id" title="record">MessageDependencies</span></a></span> characterize a <code>message_dependencies</code> function
+through two properties:
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> Necessity: All dependent messeges for a message <code>m</code>m are required to be
+
+</li>
+</ul>
+observed by any state emitting the message <code>m</code>.
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> Sufficiency: A message can be produced by the machine pre-loaded with its
+
+</li>
+</ul>
+dependencies.
+
+<div class="paragraph"> </div>
+
+Together with <span class="inlinecode"><a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies_full_node_condition_prop"><span class="id" title="definition">message_dependencies_full_node_condition_prop</span></a></span>, it
+constitutes the <i>full node assumption</i>.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <a id="MessageDependencies" class="idref" href="#MessageDependencies"><span class="id" title="record">MessageDependencies</span></a><br/>
+&nbsp;&nbsp;:=<br/>
+&nbsp;&nbsp;{ <a id="message_dependencies_are_necessary" class="idref" href="#message_dependencies_are_necessary"><span class="id" title="projection">message_dependencies_are_necessary</span></a> (<a id="m:6" class="idref" href="#m:6"><span class="id" title="binder">m</span></a> : <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.message"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`(<a id="can_produce0:8" class="idref" href="#can_produce0:8"><span class="id" title="binder">can_produce</span></a> <a id="can_produce0:8" class="idref" href="#can_produce0:8"><span class="id" title="binder">(</span></a><a id="can_produce0:8" class="idref" href="#can_produce0:8"><span class="id" title="binder">pre_loaded_with_all_messages_vlsm</span></a> <a id="can_produce0:8" class="idref" href="#can_produce0:8"><span class="id" title="binder">X</span></a><a id="can_produce0:8" class="idref" href="#can_produce0:8"><span class="id" title="binder">)</span></a> <a id="can_produce0:8" class="idref" href="#can_produce0:8"><span class="id" title="binder">s</span></a> <a id="can_produce0:8" class="idref" href="#can_produce0:8"><span class="id" title="binder">m</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="notation">forall</span> <span class="id" title="notation">(</span><a id="dm:9" class="idref" href="#dm:9"><span class="id" title="binder">dm</span></a> : <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.message"><span class="id" title="variable">message</span></a><span class="id" title="notation">),</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.MessageDependencies.html#dm:9"><span class="id" title="variable">dm</span></a> <span class="id" title="notation">∈</span> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.message_dependencies"><span class="id" title="variable">message_dependencies</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#m:6"><span class="id" title="variable">m</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.Equivocation.html#has_been_observed"><span class="id" title="method">has_been_observed</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.X"><span class="id" title="variable">X</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#s:7"><span class="id" title="variable">s</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#dm:9"><span class="id" title="variable">dm</span></a><br/>
+&nbsp;&nbsp;; <a id="message_dependencies_are_sufficient" class="idref" href="#message_dependencies_are_sufficient"><span class="id" title="projection">message_dependencies_are_sufficient</span></a> (<a id="m:11" class="idref" href="#m:11"><span class="id" title="binder">m</span></a> : <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.message"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`(<a id="can_emit0:12" class="idref" href="#can_emit0:12"><span class="id" title="binder">can_emit</span></a> <a id="can_emit0:12" class="idref" href="#can_emit0:12"><span class="id" title="binder">(</span></a><a id="can_emit0:12" class="idref" href="#can_emit0:12"><span class="id" title="binder">pre_loaded_with_all_messages_vlsm</span></a> <a id="can_emit0:12" class="idref" href="#can_emit0:12"><span class="id" title="binder">X</span></a><a id="can_emit0:12" class="idref" href="#can_emit0:12"><span class="id" title="binder">)</span></a> <a id="can_emit0:12" class="idref" href="#can_emit0:12"><span class="id" title="binder">m</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="VLSM.Core.VLSM.html#can_emit"><span class="id" title="definition">can_emit</span></a> (<a class="idref" href="VLSM.Core.VLSM.html#pre_loaded_vlsm"><span class="id" title="definition">pre_loaded_vlsm</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.X"><span class="id" title="variable">X</span></a> (<span class="id" title="keyword">fun</span> <a id="msg:13" class="idref" href="#msg:13"><span class="id" title="binder">msg</span></a> =&gt; <a class="idref" href="VLSM.Core.MessageDependencies.html#msg:13"><span class="id" title="variable">msg</span></a> <span class="id" title="notation">∈</span> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.message_dependencies"><span class="id" title="variable">message_dependencies</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#m:11"><span class="id" title="variable">m</span></a>)) <a class="idref" href="VLSM.Core.MessageDependencies.html#m:11"><span class="id" title="variable">m</span></a><br/>
+&nbsp;&nbsp;}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The (local) full node condition for a given <code>message_dependencies</code> function
+requires that a state (receiving the message) has previously
+observed all of <code>m</code>'s dependencies.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="message_dependencies_full_node_condition" class="idref" href="#message_dependencies_full_node_condition"><span class="id" title="definition">message_dependencies_full_node_condition</span></a><br/>
+&nbsp;&nbsp;(<a id="s:15" class="idref" href="#s:15"><span class="id" title="binder">s</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#vstate"><span class="id" title="definition">vstate</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.X"><span class="id" title="variable">X</span></a>)<br/>
+&nbsp;&nbsp;(<a id="m:16" class="idref" href="#m:16"><span class="id" title="binder">m</span></a> : <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.message"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">Prop</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="notation">forall</span> <a id="dm:17" class="idref" href="#dm:17"><span class="id" title="binder">dm</span></a><span class="id" title="notation">,</span> <a class="idref" href="VLSM.Core.MessageDependencies.html#dm:17"><span class="id" title="variable">dm</span></a> <span class="id" title="notation">∈</span> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.message_dependencies"><span class="id" title="variable">message_dependencies</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#m:16"><span class="id" title="variable">m</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.Equivocation.html#has_been_observed"><span class="id" title="method">has_been_observed</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.X"><span class="id" title="variable">X</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#s:15"><span class="id" title="variable">s</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#dm:17"><span class="id" title="variable">dm</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A VLSM has the <span class="inlinecode"><a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies_full_node_condition_prop"><span class="id" title="definition">message_dependencies_full_node_condition_prop</span></a></span>
+if the validity of receiving a message in a state implies the
+<span class="inlinecode"><a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies_full_node_condition"><span class="id" title="definition">message_dependencies_full_node_condition</span></a></span> for that state and message
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="message_dependencies_full_node_condition_prop" class="idref" href="#message_dependencies_full_node_condition_prop"><span class="id" title="definition">message_dependencies_full_node_condition_prop</span></a> : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="notation">forall</span> <a id="l:18" class="idref" href="#l:18"><span class="id" title="binder">l</span></a> <a id="s:19" class="idref" href="#s:19"><span class="id" title="binder">s</span></a> <a id="m:20" class="idref" href="#m:20"><span class="id" title="binder">m</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#vvalid"><span class="id" title="definition">vvalid</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies.X"><span class="id" title="variable">X</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#l:18"><span class="id" title="variable">l</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"><span class="id" title="notation">(</span></a><a class="idref" href="VLSM.Core.MessageDependencies.html#s:19"><span class="id" title="variable">s</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"><span class="id" title="notation">,</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#m:20"><span class="id" title="variable">m</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies_full_node_condition"><span class="id" title="definition">message_dependencies_full_node_condition</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#s:19"><span class="id" title="variable">s</span></a> <a class="idref" href="VLSM.Core.MessageDependencies.html#m:20"><span class="id" title="variable">m</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="VLSM.Core.MessageDependencies.html#message_dependencies"><span class="id" title="section">message_dependencies</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>
