@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>EquivocatorReplay.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-windowed alectryon-coqdoc"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.13.0+0.13.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> stdpp <span class="kn">Require Import</span> prelude.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> VLSM <span class="kn">Require Import</span> Core.VLSM Core.VLSMProjections Core.Equivocators.Common.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> VLSM <span class="kn">Require Import</span> Core.Equivocation Core.EquivocationProjections Core.Equivocators.MessageProperties.</span></span></pre><div class="doc">
+<a id="lab1"></a><h1 class="section">Equivocator State Append Determines a Projection</h1>
+<div class="paragraph"> </div>
+
+In this module, we show that we can "append" two equivocator traces by
+simulating the second at the end of the first.
+
+<div class="paragraph"> </div>
+
+The transformation on the states of the second trace is obtained by
+<span class="inlinecode"><span class="id" title="var">equivocator_state_append</span></span>ing each state to the last state of the first trace.
+
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Section</span> <span class="nf">equivocator_state_append_projection</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Context</span>
+  {<span class="nv">message</span> : <span class="kt">Type</span>}
+  (<span class="nv">X</span> : VLSM message)
+  .</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">equivocator_state_append_label</span>
+  (<span class="nv">base_s</span> : equivocator_state X)
+  (<span class="nv">l</span> : equivocator_label X)
+  : equivocator_label X
+  :=
+  <span class="kr">match</span> l <span class="kr">with</span>
+  | Spawn _ =&gt; l
+  | ContinueWith i lx =&gt; ContinueWith (i + equivocator_state_n base_s) lx
+  | ForkWith i lx =&gt; ForkWith (i + equivocator_state_n base_s) lx
+  <span class="kr">end</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk0" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk0"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_valid</span> <span class="nv">l</span> <span class="nv">s</span> <span class="nv">om</span> <span class="nv">base_s</span>
+  : equivocator_valid X l (s, om) -&gt;
+    equivocator_valid X (equivocator_state_append_label base_s l) (equivocator_state_append base_s s, om).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>equivocator_label X</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_valid X l (s, om)
+→ equivocator_valid X
+    (equivocator_state_append_label base_s l)
+    (equivocator_state_append base_s s, om)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk1" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk1"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>equivocator_label X</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_valid X l (s, om)
+→ equivocator_valid X
+    (equivocator_state_append_label base_s l)
+    (equivocator_state_append base_s s, om)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">destruct</span> l; <span class="nb">cbn</span>; [<span class="bp">exact</span> id|..]
+  ; (<span class="nb">destruct</span> (equivocator_state_project s n) <span class="kr">as</span> [sn|] <span class="nb">eqn</span>:Hn; [|<span class="bp">contradiction</span>])
+  ; <span class="nb">rewrite</span> (equivocator_state_append_project_2 _ base_s s _ n eq_refl)
+  ; <span class="nb">rewrite</span> Hn
+  ; <span class="bp">exact</span> id.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk2" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk2"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_transition</span> <span class="nv">l</span> <span class="nv">s</span> <span class="nv">om</span> <span class="nv">s&#39;</span> <span class="nv">om&#39;</span> <span class="nv">base_s</span>
+  : equivocator_valid X l (s, om) -&gt;
+    equivocator_transition X l (s, om) = (s&#39;, om&#39;) -&gt;
+    equivocator_transition X (equivocator_state_append_label base_s l)
+      (equivocator_state_append base_s s, om) = (equivocator_state_append base_s s&#39;, om&#39;).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>equivocator_label X</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>s'</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_valid X l (s, om)
+→ equivocator_transition X l (s, om) = (s&#39;, om&#39;)
+  → equivocator_transition X
+      (equivocator_state_append_label base_s l)
+      (equivocator_state_append base_s s, om) =
+    (equivocator_state_append base_s s&#39;, om&#39;)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk3" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk3"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>equivocator_label X</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>s'</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_valid X l (s, om)
+→ equivocator_transition X l (s, om) = (s&#39;, om&#39;)
+  → equivocator_transition X
+      (equivocator_state_append_label base_s l)
+      (equivocator_state_append base_s s, om) =
+    (equivocator_state_append base_s s&#39;, om&#39;)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk4" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk4"><span class="nb">destruct</span> l; <span class="nb">cbn</span>; <span class="nb">intros</span> Hv Ht
+  ; [<span class="nb">inversion_clear</span> Ht; <span class="nb">f_equal</span>; <span class="nb">apply</span> equivocator_state_append_extend_commute|..]
+  ; (<span class="nb">destruct</span> (equivocator_state_project s n) <span class="kr">as</span> [sn|] <span class="nb">eqn</span>:Hn; [|<span class="bp">contradiction</span>])
+  ;  <span class="nb">rewrite</span> (equivocator_state_append_project_2 _ base_s s _ n eq_refl)
+  ;  <span class="nb">rewrite</span> Hn
+  ;  <span class="nb">destruct</span> (vtransition _ _ _) <span class="kr">as</span> (sn&#39;, _om&#39;) <span class="nb">eqn</span>:Hti
+  ;  <span class="nb">inversion_clear</span> Ht; <span class="nb">f_equal</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>v</var><span class="hyp-type"><b>: </b><span>vlabel X</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>s'</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>sn</var><span class="hyp-type"><b>: </b><span>vstate X</span></span></span><br><span><var>Hn</var><span class="hyp-type"><b>: </b><span>equivocator_state_project s n = Some sn</span></span></span><br><span><var>Hv</var><span class="hyp-type"><b>: </b><span>vvalid X v (sn, om)</span></span></span><br><span><var>sn'</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>_om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>Hti</var><span class="hyp-type"><b>: </b><span>vtransition X v (sn, om) = (sn&#39;, _om&#39;)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_state_update
+  (equivocator_state_append base_s s)
+  (n + equivocator_state_n base_s) sn&#39; =
+equivocator_state_append base_s
+  (equivocator_state_update s n sn&#39;)</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="EquivocatorReplay-v-chk5" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>v</var><span class="hyp-type"><b>: </b><span>vlabel X</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>s'</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>sn</var><span class="hyp-type"><b>: </b><span>vstate X</span></span></span><br><span><var>Hn</var><span class="hyp-type"><b>: </b><span>equivocator_state_project s n = Some sn</span></span></span><br><span><var>Hv</var><span class="hyp-type"><b>: </b><span>vvalid X v (sn, om)</span></span></span><br><span><var>sn'</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>_om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>Hti</var><span class="hyp-type"><b>: </b><span>vtransition X v (sn, om) = (sn&#39;, _om&#39;)</span></span></span><br></div><label class="goal-separator" for="EquivocatorReplay-v-chk5"><hr></label><div class="goal-conclusion">equivocator_state_extend
+  (equivocator_state_append base_s s) sn&#39; =
+equivocator_state_append base_s
+  (equivocator_state_extend s sn&#39;)</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk6" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk6">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>v</var><span class="hyp-type"><b>: </b><span>vlabel X</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>s'</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>sn</var><span class="hyp-type"><b>: </b><span>vstate X</span></span></span><br><span><var>Hn</var><span class="hyp-type"><b>: </b><span>equivocator_state_project s n = Some sn</span></span></span><br><span><var>Hv</var><span class="hyp-type"><b>: </b><span>vvalid X v (sn, om)</span></span></span><br><span><var>sn'</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>_om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>Hti</var><span class="hyp-type"><b>: </b><span>vtransition X v (sn, om) = (sn&#39;, _om&#39;)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_state_update
+  (equivocator_state_append base_s s)
+  (n + equivocator_state_n base_s) sn&#39; =
+equivocator_state_append base_s
+  (equivocator_state_update s n sn&#39;)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> equivocator_state_append_update_commute.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk7" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk7">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>v</var><span class="hyp-type"><b>: </b><span>vlabel X</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>s'</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>sn</var><span class="hyp-type"><b>: </b><span>vstate X</span></span></span><br><span><var>Hn</var><span class="hyp-type"><b>: </b><span>equivocator_state_project s n = Some sn</span></span></span><br><span><var>Hv</var><span class="hyp-type"><b>: </b><span>vvalid X v (sn, om)</span></span></span><br><span><var>sn'</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>_om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>Hti</var><span class="hyp-type"><b>: </b><span>vtransition X v (sn, om) = (sn&#39;, _om&#39;)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_state_extend
+  (equivocator_state_append base_s s) sn&#39; =
+equivocator_state_append base_s
+  (equivocator_state_extend s sn&#39;)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> equivocator_state_append_extend_commute.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk8" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk8"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_initial_state_in_futures</span>
+    (<span class="nv">seed</span> : message -&gt; <span class="kt">Prop</span>)
+    (<span class="nv">base_s</span> : equivocator_state X)
+    (<span class="nv">Hbase_s</span> : valid_state_prop (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s)
+    <span class="nv">s</span>
+    : vinitial_state_prop (equivocator_vlsm X) s -&gt;
+      in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s (equivocator_state_append base_s s).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">vinitial_state_prop (equivocator_vlsm X) s
+→ in_futures
+    (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s
+    (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk9" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk9"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">vinitial_state_prop (equivocator_vlsm X) s
+→ in_futures
+    (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s
+    (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chka" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chka"><span class="kr">exists</span>
+    [(@Build_transition_item _ (type (equivocator_vlsm X))
+      (Spawn (equivocator_state_zero s))
+      None
+      (equivocator_state_append base_s s)
+      None)].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">finite_valid_trace_from_to
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s
+  (equivocator_state_append base_s s)
+  [{|
+     l := Spawn (equivocator_state_zero s);
+     input := None;
+     destination := equivocator_state_append base_s s;
+     output := None
+   |}]</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chkb" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chkb"><span class="nb">apply</span> (finite_valid_trace_from_to_singleton (pre_loaded_vlsm (equivocator_vlsm X) seed)).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">input_valid_transition
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (Spawn (equivocator_state_zero s)) (base_s, None)
+  (equivocator_state_append base_s s, None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chkc" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chkc"><span class="kp">repeat</span> <span class="nb">split</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="EquivocatorReplay-v-chkd" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><label class="goal-separator" for="EquivocatorReplay-v-chkd"><hr></label><div class="goal-conclusion">option_valid_message_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) None</div></blockquote><input class="alectryon-extra-goal-toggle" id="EquivocatorReplay-v-chke" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><label class="goal-separator" for="EquivocatorReplay-v-chke"><hr></label><div class="goal-conclusion">vinitial_state_prop X (equivocator_state_zero s)</div></blockquote><input class="alectryon-extra-goal-toggle" id="EquivocatorReplay-v-chkf" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><label class="goal-separator" for="EquivocatorReplay-v-chkf"><hr></label><div class="goal-conclusion">transition (Spawn (equivocator_state_zero s))
+  (base_s, None) =
+(equivocator_state_append base_s s, None)</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk10" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk10">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">assumption</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk11" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk11">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">option_valid_message_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) None</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> option_valid_message_None.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk12" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk12">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">vinitial_state_prop X (equivocator_state_zero s)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> H.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk13" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk13">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">transition (Spawn (equivocator_state_zero s))
+  (base_s, None) =
+(equivocator_state_append base_s s, None)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk14" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk14"><span class="nb">cbn</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(equivocator_state_extend base_s
+   (equivocator_state_zero s), None) =
+(equivocator_state_append base_s s, None)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk15" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk15"><span class="nb">f_equal</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_state_extend base_s
+  (equivocator_state_zero s) =
+equivocator_state_append base_s s</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk16" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk16"><span class="nb">symmetry</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_state_append base_s s =
+equivocator_state_extend base_s
+  (equivocator_state_zero s)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk17" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk17"><span class="nb">apply</span> equivocator_state_append_singleton_is_extend.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">is_singleton_state X s</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> H.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk18" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk18"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_transition_initial_state</span>
+    (<span class="nv">seed</span> : message -&gt; <span class="kt">Prop</span>)
+    (<span class="nv">base_s</span> : equivocator_state X)
+    (<span class="nv">Hbase_s</span> : valid_state_prop (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s)
+    <span class="nv">s</span>
+    : vinitial_state_prop (equivocator_vlsm X) s -&gt;
+      valid_state_prop (pre_loaded_vlsm (equivocator_vlsm X) seed)
+        (equivocator_state_append base_s s).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">vinitial_state_prop (equivocator_vlsm X) s
+→ valid_state_prop
+    (pre_loaded_vlsm (equivocator_vlsm X) seed)
+    (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk19" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk19"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">vinitial_state_prop (equivocator_vlsm X) s
+→ valid_state_prop
+    (pre_loaded_vlsm (equivocator_vlsm X) seed)
+    (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk1a" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk1a"><span class="nb">intros</span> Hs.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk1b" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk1b"><span class="nb">apply</span> in_futures_valid_snd <span class="kr">with</span> base_s.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop (equivocator_vlsm X) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> equivocator_state_append_initial_state_in_futures; <span class="bp">assumption</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk1c" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk1c"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_preloaded_with_weak_projection</span>
+  (<span class="nv">seed</span> : message -&gt; <span class="kt">Prop</span>)
+  (<span class="nv">base_s</span> : equivocator_state X)
+  (<span class="nv">Hbase_s</span> : valid_state_prop (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s)
+  : VLSM_weak_full_projection (pre_loaded_vlsm (equivocator_vlsm X) seed) (pre_loaded_vlsm (equivocator_vlsm X) seed)
+        (equivocator_state_append_label base_s) (equivocator_state_append base_s).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">VLSM_weak_full_projection
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk1d" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk1d"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">VLSM_weak_full_projection
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk1e" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk1e"><span class="nb">apply</span> basic_VLSM_weak_full_projection; <span class="nb">intro</span>; <span class="nb">intros</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>label</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>Hv</var><span class="hyp-type"><b>: </b><span>input_valid
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) l
+  (s, om)</span></span></span><br><span><var>HsY</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s s)</span></span></span><br><span><var>HomY</var><span class="hyp-type"><b>: </b><span>option_valid_message_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  om</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">vvalid (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s l)
+  (equivocator_state_append base_s s, om)</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="EquivocatorReplay-v-chk1f" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>label</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>s'</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>input_valid_transition
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) l
+  (s, om) (s&#39;, om&#39;)</span></span></span><br></div><label class="goal-separator" for="EquivocatorReplay-v-chk1f"><hr></label><div class="goal-conclusion">vtransition
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s l)
+  (equivocator_state_append base_s s, om) =
+(equivocator_state_append base_s s&#39;, om&#39;)</div></blockquote><input class="alectryon-extra-goal-toggle" id="EquivocatorReplay-v-chk20" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) s</span></span></span><br></div><label class="goal-separator" for="EquivocatorReplay-v-chk20"><hr></label><div class="goal-conclusion">valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s s)</div></blockquote><input class="alectryon-extra-goal-toggle" id="EquivocatorReplay-v-chk21" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>label</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hv</var><span class="hyp-type"><b>: </b><span>input_valid
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) l
+  (s, Some m)</span></span></span><br><span><var>HsY</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s s)</span></span></span><br><span><var>HmX</var><span class="hyp-type"><b>: </b><span>vinitial_message_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) m</span></span></span><br></div><label class="goal-separator" for="EquivocatorReplay-v-chk21"><hr></label><div class="goal-conclusion">valid_message_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) m</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk22" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk22">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>label</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>Hv</var><span class="hyp-type"><b>: </b><span>input_valid
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) l
+  (s, om)</span></span></span><br><span><var>HsY</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s s)</span></span></span><br><span><var>HomY</var><span class="hyp-type"><b>: </b><span>option_valid_message_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  om</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">vvalid (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s l)
+  (equivocator_state_append base_s s, om)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk23" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk23"><span class="nb">apply</span> equivocator_state_append_valid.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>label</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>Hv</var><span class="hyp-type"><b>: </b><span>input_valid
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) l
+  (s, om)</span></span></span><br><span><var>HsY</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s s)</span></span></span><br><span><var>HomY</var><span class="hyp-type"><b>: </b><span>option_valid_message_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  om</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_valid X l (s, om)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> Hv.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk24" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk24">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>label</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>om</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>s'</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>om'</var><span class="hyp-type"><b>: </b><span>option message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>input_valid_transition
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) l
+  (s, om) (s&#39;, om&#39;)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">vtransition
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s l)
+  (equivocator_state_append base_s s, om) =
+(equivocator_state_append base_s s&#39;, om&#39;)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> equivocator_state_append_transition; <span class="nb">apply</span> H.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk25" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk25">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>vinitial_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> equivocator_state_append_transition_initial_state; <span class="bp">assumption</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk26" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk26">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>label</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hv</var><span class="hyp-type"><b>: </b><span>input_valid
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) l
+  (s, Some m)</span></span></span><br><span><var>HsY</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s s)</span></span></span><br><span><var>HmX</var><span class="hyp-type"><b>: </b><span>vinitial_message_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) m</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_message_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) m</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> initial_message_is_valid; <span class="bp">assumption</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk27" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk27"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_preloaded_weak_projection</span>
+  (<span class="nv">base_s</span> : equivocator_state X)
+  (<span class="nv">Hbase_s</span> : valid_state_prop (pre_loaded_with_all_messages_vlsm (equivocator_vlsm X)) base_s)
+  : VLSM_weak_full_projection (pre_loaded_with_all_messages_vlsm (equivocator_vlsm X)) (pre_loaded_with_all_messages_vlsm (equivocator_vlsm X))
+        (equivocator_state_append_label base_s) (equivocator_state_append base_s).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">VLSM_weak_full_projection
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk28" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk28"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">VLSM_weak_full_projection
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk29" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk29"><span class="nb">specialize</span> (pre_loaded_with_all_messages_vlsm_is_pre_loaded_with_True (equivocator_vlsm X)) <span class="kr">as</span> Heq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">VLSM_weak_full_projection
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk2a" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk2a"><span class="nb">constructor</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">sX</span> : state) (<span class="nv">trX</span> : list transition_item),
+  finite_valid_trace_from
+    (pre_loaded_with_all_messages_vlsm
+       (equivocator_vlsm X)) sX trX
+  → finite_valid_trace_from
+      (pre_loaded_with_all_messages_vlsm
+         (equivocator_vlsm X))
+      (equivocator_state_append base_s sX)
+      (pre_VLSM_full_projection_finite_trace_project
+         (type
+            (pre_loaded_with_all_messages_vlsm
+               (equivocator_vlsm X)))
+         (type
+            (pre_loaded_with_all_messages_vlsm
+               (equivocator_vlsm X)))
+         (equivocator_state_append_label base_s)
+         (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk2b" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk2b"><span class="nb">intros</span> sX trX HtrX.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br><span><var>sX</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>trX</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>HtrX</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) sX trX</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">finite_valid_trace_from
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (equivocator_state_append base_s sX)
+  (pre_VLSM_full_projection_finite_trace_project
+     (type
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X)))
+     (type
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X)))
+     (equivocator_state_append_label base_s)
+     (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk2c" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk2c"><span class="nb">apply</span> (VLSM_eq_finite_valid_trace_from Heq) <span class="kr">in</span> HtrX.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br><span><var>sX</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>trX</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>HtrX</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_vlsm 
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+  |} sX trX</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">finite_valid_trace_from
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (equivocator_state_append base_s sX)
+  (pre_VLSM_full_projection_finite_trace_project
+     (type
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X)))
+     (type
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X)))
+     (equivocator_state_append_label base_s)
+     (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk2d" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk2d"><span class="nb">apply</span> (VLSM_eq_finite_valid_trace_from Heq).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br><span><var>sX</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>trX</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>HtrX</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_vlsm 
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+  |} sX trX</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">finite_valid_trace_from
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_vlsm (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+  |} (equivocator_state_append base_s sX)
+  (pre_VLSM_full_projection_finite_trace_project
+     (type
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X)))
+     (type
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X)))
+     (equivocator_state_append_label base_s)
+     (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk2e" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk2e"><span class="nb">revert</span> sX trX HtrX.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">sX</span> : state) (<span class="nv">trX</span> : list transition_item),
+  finite_valid_trace_from
+    {|
+      vtype :=
+        vtype
+          (pre_loaded_with_all_messages_vlsm
+             (equivocator_vlsm X));
+      vmachine :=
+        machine
+          (pre_loaded_vlsm (equivocator_vlsm X)
+             (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+    |} sX trX
+  → finite_valid_trace_from
+      {|
+        vtype :=
+          vtype
+            (pre_loaded_with_all_messages_vlsm
+               (equivocator_vlsm X));
+        vmachine :=
+          machine
+            (pre_loaded_vlsm (equivocator_vlsm X)
+               (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+      |} (equivocator_state_append base_s sX)
+      (pre_VLSM_full_projection_finite_trace_project
+         (type
+            (pre_loaded_with_all_messages_vlsm
+               (equivocator_vlsm X)))
+         (type
+            (pre_loaded_with_all_messages_vlsm
+               (equivocator_vlsm X)))
+         (equivocator_state_append_label base_s)
+         (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk2f" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk2f"><span class="nb">apply</span> equivocator_state_append_preloaded_with_weak_projection.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>)) base_s</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk30" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk30"><span class="nb">apply</span> (VLSM_eq_valid_state Heq).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X))
+  |} base_s</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">assumption</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk31" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk31"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_weak_projection</span>
+  (<span class="nv">base_s</span> : equivocator_state X)
+  (<span class="nv">Hbase_s</span> : valid_state_prop (equivocator_vlsm X) base_s)
+  : VLSM_weak_full_projection (equivocator_vlsm X) (equivocator_vlsm X)
+        (equivocator_state_append_label base_s) (equivocator_state_append base_s).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">VLSM_weak_full_projection (equivocator_vlsm X)
+  (equivocator_vlsm X)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk32" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk32"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">VLSM_weak_full_projection (equivocator_vlsm X)
+  (equivocator_vlsm X)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk33" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk33"><span class="nb">specialize</span> (vlsm_is_pre_loaded_with_False (equivocator_vlsm X)) <span class="kr">as</span> Heq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq (equivocator_vlsm X)
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">VLSM_weak_full_projection (equivocator_vlsm X)
+  (equivocator_vlsm X)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk34" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk34"><span class="nb">constructor</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq (equivocator_vlsm X)
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">sX</span> : state) (<span class="nv">trX</span> : list transition_item),
+  finite_valid_trace_from (equivocator_vlsm X) sX trX
+  → finite_valid_trace_from (equivocator_vlsm X)
+      (equivocator_state_append base_s sX)
+      (pre_VLSM_full_projection_finite_trace_project
+         (type (equivocator_vlsm X))
+         (type (equivocator_vlsm X))
+         (equivocator_state_append_label base_s)
+         (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk35" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk35"><span class="nb">intros</span> sX trX HtrX.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq (equivocator_vlsm X)
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))</span></span></span><br><span><var>sX</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>trX</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>HtrX</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from 
+  (equivocator_vlsm X) sX trX</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">finite_valid_trace_from (equivocator_vlsm X)
+  (equivocator_state_append base_s sX)
+  (pre_VLSM_full_projection_finite_trace_project
+     (type (equivocator_vlsm X))
+     (type (equivocator_vlsm X))
+     (equivocator_state_append_label base_s)
+     (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk36" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk36"><span class="nb">apply</span> (VLSM_eq_finite_valid_trace_from Heq) <span class="kr">in</span> HtrX.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq (equivocator_vlsm X)
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))</span></span></span><br><span><var>sX</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>trX</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>HtrX</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from
+  {|
+    vtype := vtype (equivocator_vlsm X);
+    vmachine :=
+      machine
+        (pre_loaded_vlsm 
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))
+  |} sX trX</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">finite_valid_trace_from (equivocator_vlsm X)
+  (equivocator_state_append base_s sX)
+  (pre_VLSM_full_projection_finite_trace_project
+     (type (equivocator_vlsm X))
+     (type (equivocator_vlsm X))
+     (equivocator_state_append_label base_s)
+     (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk37" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk37"><span class="nb">apply</span> (VLSM_eq_finite_valid_trace_from Heq).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq (equivocator_vlsm X)
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))</span></span></span><br><span><var>sX</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>trX</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>HtrX</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from
+  {|
+    vtype := vtype (equivocator_vlsm X);
+    vmachine :=
+      machine
+        (pre_loaded_vlsm 
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))
+  |} sX trX</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">finite_valid_trace_from
+  {|
+    vtype := vtype (equivocator_vlsm X);
+    vmachine :=
+      machine
+        (pre_loaded_vlsm (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))
+  |} (equivocator_state_append base_s sX)
+  (pre_VLSM_full_projection_finite_trace_project
+     (type (equivocator_vlsm X))
+     (type (equivocator_vlsm X))
+     (equivocator_state_append_label base_s)
+     (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk38" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk38"><span class="nb">revert</span> sX trX HtrX.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq (equivocator_vlsm X)
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">sX</span> : state) (<span class="nv">trX</span> : list transition_item),
+  finite_valid_trace_from
+    {|
+      vtype := vtype (equivocator_vlsm X);
+      vmachine :=
+        machine
+          (pre_loaded_vlsm (equivocator_vlsm X)
+             (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))
+    |} sX trX
+  → finite_valid_trace_from
+      {|
+        vtype := vtype (equivocator_vlsm X);
+        vmachine :=
+          machine
+            (pre_loaded_vlsm (equivocator_vlsm X)
+               (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))
+      |} (equivocator_state_append base_s sX)
+      (pre_VLSM_full_projection_finite_trace_project
+         (type (equivocator_vlsm X))
+         (type (equivocator_vlsm X))
+         (equivocator_state_append_label base_s)
+         (equivocator_state_append base_s) trX)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk39" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk39"><span class="nb">apply</span> equivocator_state_append_preloaded_with_weak_projection.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq (equivocator_vlsm X)
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>)) base_s</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk3a" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk3a"><span class="nb">apply</span> (VLSM_eq_valid_state Heq).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>equivocator_state X</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop (equivocator_vlsm X) base_s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq (equivocator_vlsm X)
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">False</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">valid_state_prop
+  {|
+    vtype := vtype (equivocator_vlsm X);
+    vmachine := machine (equivocator_vlsm X)
+  |} base_s</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">assumption</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk3b" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk3b"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_in_futures</span>
+  (<span class="nv">seed</span> : message -&gt; <span class="kt">Prop</span>)
+  <span class="nv">base_s</span> (<span class="nv">Hbase_s</span> : valid_state_prop (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s)
+  <span class="nv">s</span> (<span class="nv">Hs</span> : valid_state_prop (pre_loaded_vlsm (equivocator_vlsm X) seed) s)
+  : in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed) base_s (equivocator_state_append base_s s).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk3c" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk3c"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk3d" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk3d"><span class="nb">apply</span> valid_state_has_trace <span class="kr">in</span> Hs <span class="kr">as</span> [<span class="kr">is</span> [tr [Htr His]]].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s, is</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>tr</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>Htr</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from_to
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) <span class="kr">is</span>
+  s tr</span></span></span><br><span><var>His</var><span class="hyp-type"><b>: </b><span>initial_state_prop <span class="kr">is</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk3e" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk3e"><span class="nb">specialize</span> (equivocator_state_append_preloaded_with_weak_projection seed _ Hbase_s) <span class="kr">as</span> Hproj.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s, is</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>tr</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>Htr</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from_to
+  (pre_loaded_vlsm (equivocator_vlsm X) seed) <span class="kr">is</span>
+  s tr</span></span></span><br><span><var>His</var><span class="hyp-type"><b>: </b><span>initial_state_prop <span class="kr">is</span></span></span></span><br><span><var>Hproj</var><span class="hyp-type"><b>: </b><span>VLSM_weak_full_projection
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk3f" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk3f"><span class="nb">apply</span> (VLSM_weak_full_projection_finite_valid_trace_from_to Hproj) <span class="kr">in</span> Htr.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s, is</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>tr</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>Hproj</var><span class="hyp-type"><b>: </b><span>VLSM_weak_full_projection
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</span></span></span><br><span><var>Htr</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from_to
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s <span class="kr">is</span>)
+  (equivocator_state_append base_s s)
+  (VLSM_weak_full_projection_finite_trace_project
+     Hproj tr)</span></span></span><br><span><var>His</var><span class="hyp-type"><b>: </b><span>initial_state_prop <span class="kr">is</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk40" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk40"><span class="nb">apply</span> in_futures_trans <span class="kr">with</span> (equivocator_state_append base_s <span class="kr">is</span>).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s, is</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>tr</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>Hproj</var><span class="hyp-type"><b>: </b><span>VLSM_weak_full_projection
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</span></span></span><br><span><var>Htr</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from_to
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s <span class="kr">is</span>)
+  (equivocator_state_append base_s s)
+  (VLSM_weak_full_projection_finite_trace_project
+     Hproj tr)</span></span></span><br><span><var>His</var><span class="hyp-type"><b>: </b><span>initial_state_prop <span class="kr">is</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s (equivocator_state_append base_s <span class="kr">is</span>)</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="EquivocatorReplay-v-chk41" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s, is</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>tr</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>Hproj</var><span class="hyp-type"><b>: </b><span>VLSM_weak_full_projection
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</span></span></span><br><span><var>Htr</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from_to
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s <span class="kr">is</span>)
+  (equivocator_state_append base_s s)
+  (VLSM_weak_full_projection_finite_trace_project
+     Hproj tr)</span></span></span><br><span><var>His</var><span class="hyp-type"><b>: </b><span>initial_state_prop <span class="kr">is</span></span></span></span><br></div><label class="goal-separator" for="EquivocatorReplay-v-chk41"><hr></label><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s <span class="kr">is</span>)
+  (equivocator_state_append base_s s)</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk42" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk42">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s, is</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>tr</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>Hproj</var><span class="hyp-type"><b>: </b><span>VLSM_weak_full_projection
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</span></span></span><br><span><var>Htr</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from_to
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s <span class="kr">is</span>)
+  (equivocator_state_append base_s s)
+  (VLSM_weak_full_projection_finite_trace_project
+     Hproj tr)</span></span></span><br><span><var>His</var><span class="hyp-type"><b>: </b><span>initial_state_prop <span class="kr">is</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s (equivocator_state_append base_s <span class="kr">is</span>)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> equivocator_state_append_initial_state_in_futures; <span class="bp">assumption</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk43" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk43">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>seed</var><span class="hyp-type"><b>: </b><span>message → <span class="kt">Prop</span></span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  base_s</span></span></span><br><span><var>s, is</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>tr</var><span class="hyp-type"><b>: </b><span>list transition_item</span></span></span><br><span><var>Hproj</var><span class="hyp-type"><b>: </b><span>VLSM_weak_full_projection
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</span></span></span><br><span><var>Htr</var><span class="hyp-type"><b>: </b><span>finite_valid_trace_from_to
+  (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s <span class="kr">is</span>)
+  (equivocator_state_append base_s s)
+  (VLSM_weak_full_projection_finite_trace_project
+     Hproj tr)</span></span></span><br><span><var>His</var><span class="hyp-type"><b>: </b><span>initial_state_prop <span class="kr">is</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">in_futures (pre_loaded_vlsm (equivocator_vlsm X) seed)
+  (equivocator_state_append base_s <span class="kr">is</span>)
+  (equivocator_state_append base_s s)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">eexists</span>; <span class="bp">exact</span> Htr.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk44" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk44"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_sent_left</span>
+  `{HasBeenSentCapability message X}
+  base_s (Hbase_s : valid_state_prop (pre_loaded_with_all_messages_vlsm (equivocator_vlsm X)) base_s)
+  s (Hs : valid_state_prop (pre_loaded_with_all_messages_vlsm (equivocator_vlsm X)) s)
+  : <span class="kr">forall</span> <span class="nv">m</span>, equivocator_has_been_sent X base_s m -&gt;
+    equivocator_has_been_sent X (equivocator_state_append base_s s) m.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X base_s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk45" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk45"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X base_s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk46" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk46"><span class="nb">specialize</span> (pre_loaded_with_all_messages_vlsm_is_pre_loaded_with_True (equivocator_vlsm X)) <span class="kr">as</span> Heq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X base_s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk47" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk47"><span class="nb">apply</span> (VLSM_eq_valid_state Heq) <span class="kr">in</span> Hbase_s.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_vlsm
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+  |} base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X base_s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk48" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk48"><span class="nb">apply</span> (VLSM_eq_valid_state Heq) <span class="kr">in</span> Hs.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_vlsm
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+  |} base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_vlsm 
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+  |} s</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X base_s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk49" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk49"><span class="nb">apply</span> (equivocator_state_append_in_futures _ _ Hbase_s) <span class="kr">in</span> Hs.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_vlsm
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+  |} base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>in_futures
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>)) base_s
+  (equivocator_state_append base_s s)</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X base_s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk4a" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk4a"><span class="nb">apply</span> (VLSM_eq_in_futures Heq) <span class="kr">in</span> Hs.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_vlsm
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+  |} base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>in_futures
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X))
+  |} base_s (equivocator_state_append base_s s)</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X base_s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk4b" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk4b"><span class="nb">apply</span> (in_futures_preserving_oracle_from_stepwise _ (equivocator_vlsm X) (field_selector output) (equivocator_has_been_sent X))
+  ; [|<span class="bp">assumption</span>].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_vlsm
+           (equivocator_vlsm X)
+           (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))
+  |} base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>in_futures
+  {|
+    vtype :=
+      vtype
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X));
+    vmachine :=
+      machine
+        (pre_loaded_with_all_messages_vlsm
+           (equivocator_vlsm X))
+  |} base_s (equivocator_state_append base_s s)</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>VLSM_eq
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_vlsm (equivocator_vlsm X)
+     (<span class="kr">λ</span> <span class="nv">_</span> : message, <span class="kt">True</span>))</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">oracle_stepwise_props (field_selector output)
+  (equivocator_has_been_sent X)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">apply</span> equivocator_has_been_sent_stepwise_props.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk4c" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk4c"><span class="kn">Lemma</span> <span class="nf">equivocator_state_append_sent_right</span>
+  `{HasBeenSentCapability message X}
+  base_s (Hbase_s : valid_state_prop (pre_loaded_with_all_messages_vlsm (equivocator_vlsm X)) base_s)
+  s (Hs : valid_state_prop (pre_loaded_with_all_messages_vlsm (equivocator_vlsm X)) s)
+  : <span class="kr">forall</span> <span class="nv">m</span>, equivocator_has_been_sent X s m -&gt;
+    equivocator_has_been_sent X (equivocator_state_append base_s s) m.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk4d" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk4d"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk4e" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk4e"><span class="nb">specialize</span> (equivocator_state_append_preloaded_weak_projection _ Hbase_s) <span class="kr">as</span> Hproj.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) s</span></span></span><br><span><var>Hproj</var><span class="hyp-type"><b>: </b><span>VLSM_weak_full_projection
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m</span> : message,
+  equivocator_has_been_sent X s m
+  → equivocator_has_been_sent X
+      (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk4f" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk4f"><span class="nb">intros</span> m Hm.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) s</span></span></span><br><span><var>Hproj</var><span class="hyp-type"><b>: </b><span>VLSM_weak_full_projection
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hm</var><span class="hyp-type"><b>: </b><span>equivocator_has_been_sent X s m</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_has_been_sent X
+  (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquivocatorReplay-v-chk50" style="display: none" type="checkbox"><label class="alectryon-input" for="EquivocatorReplay-v-chk50"><span class="nb">specialize</span> (VLSM_weak_full_projection_has_been_sent Hproj _ Hs _ Hm) <span class="kr">as</span> HmY.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>message</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>X</var><span class="hyp-type"><b>: </b><span>VLSM message</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>HasBeenSentCapability X</span></span></span><br><span><var>base_s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hbase_s</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) base_s</span></span></span><br><span><var>s</var><span class="hyp-type"><b>: </b><span>state</span></span></span><br><span><var>Hs</var><span class="hyp-type"><b>: </b><span>valid_state_prop
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X)) s</span></span></span><br><span><var>Hproj</var><span class="hyp-type"><b>: </b><span>VLSM_weak_full_projection
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (pre_loaded_with_all_messages_vlsm
+     (equivocator_vlsm X))
+  (equivocator_state_append_label base_s)
+  (equivocator_state_append base_s)</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>message</span></span></span><br><span><var>Hm</var><span class="hyp-type"><b>: </b><span>equivocator_has_been_sent X s m</span></span></span><br><span><var>HmY</var><span class="hyp-type"><b>: </b><span>has_been_sent (equivocator_vlsm X)
+  (equivocator_state_append base_s s) m</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">equivocator_has_been_sent X
+  (equivocator_state_append base_s s) m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">assumption</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">End</span> <span class="nf">equivocator_state_append_projection</span>.</span></span></pre></article></body></html>

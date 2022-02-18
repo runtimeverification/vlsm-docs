@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"><script>document.write(document.title)</script></span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">stdpp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">prelude</span> <span class="id" title="library">finite</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Coq</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#"><span class="id" title="library">FinFun</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">VLSM</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="VLSM.Lib.Preamble.html#"><span class="id" title="library">Lib.Preamble</span></a> <a class="idref" href="VLSM.Lib.ListExtras.html#"><span class="id" title="library">Lib.ListExtras</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab8"></a><h1 class="section">Finite function utility definitions and lemmas</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="listing_from_finite" class="idref" href="#listing_from_finite"><span class="id" title="lemma">listing_from_finite</span></a> (<a id="A:1" class="idref" href="#A:1"><span class="id" title="binder">A</span></a> : <span class="id" title="keyword">Type</span>) `{<a id="H:3" class="idref" href="#H:3"><span class="id" title="binder">finite.Finite</span></a> <a id="H:3" class="idref" href="#H:3"><span class="id" title="binder">A</span></a>} : <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#Listing"><span class="id" title="definition">Listing</span></a> (<span class="id" title="method">enum</span> <a class="idref" href="VLSM.Lib.FinFunExtras.html#A:1"><span class="id" title="variable">A</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="lemma">NoDup_ListNoDup</span>, <span class="id" title="method">NoDup_enum</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">elem_of_list_In</span>, <span class="id" title="method">elem_of_enum</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="map_option_listing" class="idref" href="#map_option_listing"><span class="id" title="lemma">map_option_listing</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<a id="A:4" class="idref" href="#A:4"><span class="id" title="binder">A</span></a> <a id="B:5" class="idref" href="#B:5"><span class="id" title="binder">B</span></a> : <span class="id" title="keyword">Type</span>} (<a id="f:6" class="idref" href="#f:6"><span class="id" title="binder">f</span></a>: <a class="idref" href="VLSM.Lib.FinFunExtras.html#A:4"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#B:5"><span class="id" title="variable">B</span></a>) (<a id="g:7" class="idref" href="#g:7"><span class="id" title="binder">g</span></a>: <a class="idref" href="VLSM.Lib.FinFunExtras.html#B:5"><span class="id" title="variable">B</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#A:4"><span class="id" title="variable">A</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a id="f_proj_inj:10" class="idref" href="#f_proj_inj:10"><span class="id" title="binder">f_proj_inj</span></a>: <span class="id" title="notation">forall</span> <a id="a:8" class="idref" href="#a:8"><span class="id" title="binder">a</span></a> <a id="b:9" class="idref" href="#b:9"><span class="id" title="binder">b</span></a><span class="id" title="notation">,</span> <a class="idref" href="VLSM.Lib.FinFunExtras.html#f:6"><span class="id" title="variable">f</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#a:8"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#b:9"><span class="id" title="variable">b</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#a:8"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#g:7"><span class="id" title="variable">g</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#b:9"><span class="id" title="variable">b</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a id="f_surj:12" class="idref" href="#f_surj:12"><span class="id" title="binder">f_surj</span></a>: <span class="id" title="notation">forall</span> <a id="b:11" class="idref" href="#b:11"><span class="id" title="binder">b</span></a><span class="id" title="notation">,</span> <a class="idref" href="VLSM.Lib.FinFunExtras.html#f:6"><span class="id" title="variable">f</span></a> (<a class="idref" href="VLSM.Lib.FinFunExtras.html#g:7"><span class="id" title="variable">g</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#b:11"><span class="id" title="variable">b</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#b:11"><span class="id" title="variable">b</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a id="A_listing:13" class="idref" href="#A_listing:13"><span class="id" title="binder">A_listing</span></a>: <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#A:4"><span class="id" title="variable">A</span></a>) (<a id="A_finite:14" class="idref" href="#A_finite:14"><span class="id" title="binder">A_finite</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#Listing"><span class="id" title="definition">Listing</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#A_listing:13"><span class="id" title="variable">A_listing</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#Listing"><span class="id" title="definition">Listing</span></a> (<a class="idref" href="VLSM.Lib.ListExtras.html#map_option"><span class="id" title="definition">map_option</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#f:6"><span class="id" title="variable">f</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#A_listing:13"><span class="id" title="variable">A_listing</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">A_finite</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Hnodup</span> <span class="id" title="var">Hfull</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">clear</span> <span class="id" title="var">Hfull</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">A_listing</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">a</span> <span class="id" title="var">l</span> <span class="id" title="var">IHl</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">inversion_clear</span> <span class="id" title="var">Hnodup</span> <span class="id" title="keyword">as</span> [|? ? <span class="id" title="var">H1</span> <span class="id" title="var">H2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">IHl</span> <span class="id" title="var">H2</span>); <span class="id" title="tactic">clear</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>) <span class="id" title="var">eqn</span>:<span class="id" title="var">Hfa</span>;[|<span class="id" title="tactic">assumption</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">f_proj_inj</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hfa</span>. <span class="id" title="tactic">subst</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>;[|<span class="id" title="tactic">assumption</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">contradict</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Lib.ListExtras.html#in_map_option"><span class="id" title="lemma">in_map_option</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a</span> [<span class="id" title="var">Ha</span> <span class="id" title="var">Hfa</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">f_proj_inj</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hfa</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">Hfull</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Lib.ListExtras.html#in_map_option"><span class="id" title="lemma">in_map_option</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>;[<span class="id" title="tactic">assumption</span>|].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">f_surj</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="sum_listing" class="idref" href="#sum_listing"><span class="id" title="section">sum_listing</span></a>.<br/>
+</div>
+
+<div class="doc">
+'Listing' for the sum type implies 'Listing' for each projection 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;{<a id="Left:15" class="idref" href="#Left:15"><span class="id" title="binder">Left</span></a> <a id="Right:16" class="idref" href="#Right:16"><span class="id" title="binder">Right</span></a> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;{<a id="sum_listing:17" class="idref" href="#sum_listing:17"><span class="id" title="binder">sum_listing</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> (<a class="idref" href="VLSM.Lib.FinFunExtras.html#Left:15"><span class="id" title="variable">Left</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#e03f39daf98516fa530d3f6f5a1b4d92"><span class="id" title="notation">+</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#Right:16"><span class="id" title="variable">Right</span></a>)}<br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="left_listing" class="idref" href="#left_listing"><span class="id" title="definition">left_listing</span></a><br/>
+&nbsp;&nbsp;(<a id="sum_finite:18" class="idref" href="#sum_finite:18"><span class="id" title="binder">sum_finite</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#Listing"><span class="id" title="definition">Listing</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_listing.sum_listing"><span class="id" title="variable">sum_listing</span></a>)<br/>
+&nbsp;&nbsp;: <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_listing.Left"><span class="id" title="variable">Left</span></a><br/>
+&nbsp;&nbsp;:= <a class="idref" href="VLSM.Lib.ListExtras.html#list_sum_project_left"><span class="id" title="definition">list_sum_project_left</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_listing.sum_listing"><span class="id" title="variable">sum_listing</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="right_listing" class="idref" href="#right_listing"><span class="id" title="definition">right_listing</span></a><br/>
+&nbsp;&nbsp;(<a id="sum_finite:19" class="idref" href="#sum_finite:19"><span class="id" title="binder">sum_finite</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#Listing"><span class="id" title="definition">Listing</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_listing.sum_listing"><span class="id" title="variable">sum_listing</span></a>)<br/>
+&nbsp;&nbsp;: <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_listing.Right"><span class="id" title="variable">Right</span></a><br/>
+&nbsp;&nbsp;:= <a class="idref" href="VLSM.Lib.ListExtras.html#list_sum_project_right"><span class="id" title="definition">list_sum_project_right</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_listing.sum_listing"><span class="id" title="variable">sum_listing</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="left_finite" class="idref" href="#left_finite"><span class="id" title="lemma">left_finite</span></a><br/>
+&nbsp;&nbsp;(<a id="sum_finite:20" class="idref" href="#sum_finite:20"><span class="id" title="binder">sum_finite</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#Listing"><span class="id" title="definition">Listing</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_listing.sum_listing"><span class="id" title="variable">sum_listing</span></a>)<br/>
+&nbsp;&nbsp;: <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#Listing"><span class="id" title="definition">Listing</span></a> (<a class="idref" href="VLSM.Lib.FinFunExtras.html#left_listing"><span class="id" title="definition">left_listing</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_finite:20"><span class="id" title="variable">sum_finite</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">sum_finite</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Lib.FinFunExtras.html#map_option_listing"><span class="id" title="lemma">map_option_listing</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">g</span>:=<a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#inl"><span class="id" title="constructor">inl</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span>;<span class="id" title="tactic">simpl</span>;<span class="id" title="tactic">congruence</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="right_finite" class="idref" href="#right_finite"><span class="id" title="lemma">right_finite</span></a><br/>
+&nbsp;&nbsp;(<a id="sum_finite:21" class="idref" href="#sum_finite:21"><span class="id" title="binder">sum_finite</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#Listing"><span class="id" title="definition">Listing</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_listing.sum_listing"><span class="id" title="variable">sum_listing</span></a>)<br/>
+&nbsp;&nbsp;: <a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Logic.FinFun.html#Listing"><span class="id" title="definition">Listing</span></a> (<a class="idref" href="VLSM.Lib.FinFunExtras.html#right_listing"><span class="id" title="definition">right_listing</span></a> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_finite:21"><span class="id" title="variable">sum_finite</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">sum_finite</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Lib.FinFunExtras.html#map_option_listing"><span class="id" title="lemma">map_option_listing</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">g</span>:=<a class="idref" href="http://coq.inria.fr/distrib/V8.13.2/stdlib//Coq.Init.Datatypes.html#inr"><span class="id" title="constructor">inr</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span>;<span class="id" title="tactic">simpl</span>;<span class="id" title="tactic">congruence</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="VLSM.Lib.FinFunExtras.html#sum_listing"><span class="id" title="section">sum_listing</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>
