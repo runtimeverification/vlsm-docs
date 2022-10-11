@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>NatExtras.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-windowed alectryon-coqdoc"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.2. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> stdpp <span class="kn">Require Import</span> prelude.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> VLSM.Lib <span class="kn">Require Import</span> EquationsExtras.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> VLSM.Lib <span class="kn">Require Import</span> Preamble.</span></span></pre><div class="doc">
+<a id="lab1"></a><h1 class="section">Natural number utility definitions and lemmas</h1>
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --></pre><div class="doc">
+  Given a decidable property on naturals and a bound, finds the
+  largest natural (not larger the than bound) for which the property holds.
+
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Equations</span> <span class="nf">find_largest_nat_with_property_bounded</span>
+  (<span class="nv">P</span> : nat -&gt; <span class="kt">Prop</span>) `{<span class="kr">forall</span> <span class="nv">n</span>, Decision (P n)}
+  (bound : nat)
+  : option nat :=
+| P, <span class="mi">0</span> =&gt; None
+| P, S n =&gt; <span class="kr">if</span> decide (P n) <span class="kr">then</span> Some n <span class="kr">else</span> find_largest_nat_with_property_bounded P n.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk0" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk0"><span class="kn">Lemma</span> <span class="nf">find_largest_nat_with_property_bounded_Some</span>
+  (<span class="nv">P</span> : nat -&gt; <span class="kt">Prop</span>) `{<span class="kr">forall</span> <span class="nv">n</span>, Decision (P n)}
+  (bound : nat)
+  : <span class="kr">forall</span> <span class="nv">n</span>,
+      find_largest_nat_with_property_bounded P bound = Some n
+        &lt;-&gt;
+      maximal_among lt (<span class="kr">fun</span> <span class="nv">n</span> =&gt; n &lt; bound /\ P n) n.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P bound =
+  Some n
+  ↔ maximal_among lt (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk1" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk1"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P bound =
+  Some n
+  ↔ maximal_among lt (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk2" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk2"><span class="nb">induction</span> bound; simp find_largest_nat_with_property_bounded.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  None = Some n
+  ↔ maximal_among lt (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; <span class="mi">0</span> ∧ P n0) n</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk3" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk3"><hr></label><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  (<span class="kr">if</span> decide (P bound)
+   <span class="kr">then</span> Some bound
+   <span class="kr">else</span> find_largest_nat_with_property_bounded P bound) =
+  Some n
+  ↔ maximal_among lt (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; S bound ∧ P n0)
+      n</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk4" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk4">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  None = Some n
+  ↔ maximal_among lt (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; <span class="mi">0</span> ∧ P n0) n</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">split</span>; [| <span class="nb">intros</span> []; <span class="bp">lia</span>].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk5" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk5">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  (<span class="kr">if</span> decide (P bound)
+   <span class="kr">then</span> Some bound
+   <span class="kr">else</span> find_largest_nat_with_property_bounded P bound) =
+  Some n
+  ↔ maximal_among lt (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; S bound ∧ P n0)
+      n</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk6" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk6">case_decide <span class="kr">as</span> HP; <span class="nb">split</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Some bound = Some n
+→ maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; S bound ∧ P n) n</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk7" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk7"><hr></label><div class="goal-conclusion">maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; S bound ∧ P n) n
+→ Some bound = Some n</div></blockquote><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk8" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk8"><hr></label><div class="goal-conclusion">find_largest_nat_with_property_bounded P bound =
+Some n
+→ maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; S bound ∧ P n) n</div></blockquote><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk9" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk9"><hr></label><div class="goal-conclusion">maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; S bound ∧ P n) n
+→ find_largest_nat_with_property_bounded P bound =
+  Some n</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chka" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chka">+</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Some bound = Some n
+→ maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; S bound ∧ P n) n</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">intros</span> [= -&gt;]; <span class="kp">repeat</span> <span class="nb">split</span>; <span class="nb">cbn</span>; [<span class="bp">lia</span> | | <span class="bp">lia</span>].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chkb" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chkb">+</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; S bound ∧ P n) n
+→ Some bound = Some n</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chkc" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chkc"><span class="nb">intros</span> [[Hn HPn] Hmax]; <span class="nb">f_equal</span>; <span class="nb">cbn</span> <span class="kr">in</span> Hmax.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hn</var><span class="hyp-type"><b>: </b><span>n &lt; S bound</span></span></span><br><span><var>HPn</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; S bound ∧ P m&#39; → n &lt; m&#39; → m&#39; &lt; n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">bound = n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chkd" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chkd"><span class="nb">destruct</span> (decide (n &lt; bound)); [| <span class="bp">lia</span>].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hn</var><span class="hyp-type"><b>: </b><span>n &lt; S bound</span></span></span><br><span><var>HPn</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; S bound ∧ P m&#39; → n &lt; m&#39; → m&#39; &lt; n</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>n &lt; bound</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">bound = n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chke" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chke"><span class="nb">cut</span> (bound &lt; n); [<span class="bp">lia</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hn</var><span class="hyp-type"><b>: </b><span>n &lt; S bound</span></span></span><br><span><var>HPn</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; S bound ∧ P m&#39; → n &lt; m&#39; → m&#39; &lt; n</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>n &lt; bound</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">bound &lt; n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span> Hmax; [<span class="nb">split</span>; [<span class="bp">lia</span> |] |].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chkf" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chkf">+</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_largest_nat_with_property_bounded P bound =
+Some n
+→ maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; S bound ∧ P n) n</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk10" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk10"><span class="nb">rewrite</span> IHbound.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; bound ∧ P n) n
+→ maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; S bound ∧ P n) n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk11" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk11"><span class="nb">intros</span> [[] Hmax]; <span class="nb">split</span>; [<span class="bp">by</span> <span class="nb">split</span>; [<span class="bp">lia</span> |] |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H0</var><span class="hyp-type"><b>: </b><span>n &lt; bound</span></span></span><br><span><var>H1</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; bound ∧ P m&#39;
+  → flip lt m&#39; n → flip lt n m&#39;</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; S bound ∧ P m&#39; → flip lt m&#39; n → flip lt n m&#39;</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk12" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk12"><span class="nb">intros</span> m [] ?.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H0</var><span class="hyp-type"><b>: </b><span>n &lt; bound</span></span></span><br><span><var>H1</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; bound ∧ P m&#39;
+  → flip lt m&#39; n → flip lt n m&#39;</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H2</var><span class="hyp-type"><b>: </b><span>m &lt; S bound</span></span></span><br><span><var>H3</var><span class="hyp-type"><b>: </b><span>P m</span></span></span><br><span><var>H4</var><span class="hyp-type"><b>: </b><span>flip lt m n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">flip lt n m</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk13" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk13"><span class="nb">apply</span> Hmax; [<span class="nb">split</span>; [| <span class="bp">done</span>] | <span class="bp">done</span>].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H0</var><span class="hyp-type"><b>: </b><span>n &lt; bound</span></span></span><br><span><var>H1</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; bound ∧ P m&#39;
+  → flip lt m&#39; n → flip lt n m&#39;</span></span></span><br><span><var>m</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H2</var><span class="hyp-type"><b>: </b><span>m &lt; S bound</span></span></span><br><span><var>H3</var><span class="hyp-type"><b>: </b><span>P m</span></span></span><br><span><var>H4</var><span class="hyp-type"><b>: </b><span>flip lt m n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">m &lt; bound</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">destruct</span> (decide (m = bound)); [<span class="nb">subst</span> | <span class="bp">lia</span>].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk14" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk14">+</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">maximal_among lt (<span class="kr">λ</span> <span class="nv">n</span> : nat, n &lt; S bound ∧ P n) n
+→ find_largest_nat_with_property_bounded P bound =
+  Some n</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk15" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk15"><span class="nb">intros</span> [[] Hmax]; <span class="nb">apply</span> IHbound; <span class="kp">repeat</span> <span class="nb">split</span>; [| <span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H0</var><span class="hyp-type"><b>: </b><span>n &lt; S bound</span></span></span><br><span><var>H1</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; S bound ∧ P m&#39;
+  → flip lt m&#39; n → flip lt n m&#39;</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">n &lt; bound</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk16" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H0</var><span class="hyp-type"><b>: </b><span>n &lt; S bound</span></span></span><br><span><var>H1</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; S bound ∧ P m&#39;
+  → flip lt m&#39; n → flip lt n m&#39;</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk16"><hr></label><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; bound ∧ P m&#39; → flip lt m&#39; n → flip lt n m&#39;</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk17" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk17">*</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H0</var><span class="hyp-type"><b>: </b><span>n &lt; S bound</span></span></span><br><span><var>H1</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; S bound ∧ P m&#39;
+  → flip lt m&#39; n → flip lt n m&#39;</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">n &lt; bound</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">destruct</span> (decide (n = bound)); [<span class="nb">subst</span> | <span class="bp">lia</span>].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk18" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk18">*</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat,
+  find_largest_nat_with_property_bounded P
+    bound = Some n
+  ↔ maximal_among lt
+      (<span class="kr">λ</span> <span class="nv">n0</span> : nat, n0 &lt; bound ∧ P n0) n</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H0</var><span class="hyp-type"><b>: </b><span>n &lt; S bound</span></span></span><br><span><var>H1</var><span class="hyp-type"><b>: </b><span>P n</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; S bound ∧ P m&#39;
+  → flip lt m&#39; n → flip lt n m&#39;</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">m&#39;</span> : nat,
+  m&#39; &lt; bound ∧ P m&#39; → flip lt m&#39; n → flip lt n m&#39;</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">intros</span> m [] ?; <span class="nb">apply</span> Hmax; [<span class="nb">split</span>; [<span class="bp">lia</span> |] |].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk19" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk19"><span class="kn">Lemma</span> <span class="nf">find_largest_nat_with_property_bounded_None</span>
+  (<span class="nv">P</span> : nat -&gt; <span class="kt">Prop</span>) `{<span class="kr">forall</span> <span class="nv">n</span>, Decision (P n)}
+  (bound : nat)
+  : find_largest_nat_with_property_bounded P bound = None
+      &lt;-&gt;
+    <span class="kr">forall</span> <span class="nv">n</span>, n &lt; bound -&gt; ~ P n.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_largest_nat_with_property_bounded P bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk1a" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk1a"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_largest_nat_with_property_bounded P bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk1b" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk1b"><span class="nb">induction</span> bound; simp find_largest_nat_with_property_bounded; [<span class="bp">by</span> <span class="nb">split</span>; [<span class="bp">lia</span> |] |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">if</span> decide (P bound)
+ <span class="kr">then</span> Some bound
+ <span class="kr">else</span> find_largest_nat_with_property_bounded P bound) =
+None ↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; S bound → ¬ P n)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk1c" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk1c">case_decide <span class="kr">as</span> HP; <span class="nb">split</span>; [<span class="bp">done</span> | | |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>P bound</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; S bound → ¬ P n) → Some bound = None</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk1d" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk1d"><hr></label><div class="goal-conclusion">find_largest_nat_with_property_bounded P bound = None
+→ <span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; S bound → ¬ P n</div></blockquote><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk1e" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk1e"><hr></label><div class="goal-conclusion">(<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; S bound → ¬ P n)
+→ find_largest_nat_with_property_bounded P bound =
+  None</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk1f" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk1f">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>P bound</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; S bound → ¬ P n) → Some bound = None</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">intro</span> Hmax; <span class="bp">contradict</span> HP; <span class="nb">apply</span> Hmax; <span class="bp">lia</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk20" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk20">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_largest_nat_with_property_bounded P bound = None
+→ <span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; S bound → ¬ P n</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk21" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk21"><span class="nb">intros</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>H0</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P bound =
+None</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H1</var><span class="hyp-type"><b>: </b><span>n &lt; S bound</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">¬ P n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk22" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk22"><span class="nb">destruct</span> (decide (n &lt; bound)); [<span class="bp">by</span> <span class="nb">eapply</span> IHbound |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>H0</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P bound =
+None</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>H1</var><span class="hyp-type"><b>: </b><span>n &lt; S bound</span></span></span><br><span><var>n0</var><span class="hyp-type"><b>: </b><span>¬ n &lt; bound</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">¬ P n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">replace</span> n <span class="kr">with</span> bound; [| <span class="bp">lia</span>].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk23" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk23">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; S bound → ¬ P n)
+→ find_largest_nat_with_property_bounded P bound =
+  None</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk24" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk24"><span class="nb">intros</span> Hmax; <span class="nb">apply</span> IHbound.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>nat → <span class="kt">Prop</span></span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, Decision (P n)</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>IHbound</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded P
+  bound = None
+↔ (<span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n)</span></span></span><br><span><var>HP</var><span class="hyp-type"><b>: </b><span>¬ P bound</span></span></span><br><span><var>Hmax</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; S bound → ¬ P n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">n</span> : nat, n &lt; bound → ¬ P n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">intros</span>; <span class="nb">apply</span> Hmax; <span class="bp">lia</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span></span></pre><div class="doc">
+  Given a predicate on indices and naturals, a bound for each index, and a
+  list of indices, finds first index in the list and largest natural (less than
+  bound) corresponding to it for which the predicate holds.
+
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Equations</span> <span class="nf">find_first_indexed_largest_nat_with_propery_bounded</span> {<span class="nv">index</span>}
+  (<span class="nv">P</span> : index -&gt; nat -&gt; <span class="kt">Prop</span>) `{!RelDecision P}
+  (bound : index -&gt; nat)
+  (indices : list index)
+  : option (index * nat) :=
+| _, _, [] =&gt; None
+| P, bound, i :: indices&#39; <span class="kr">with</span> inspect (find_largest_nat_with_property_bounded (P i) (bound i)) =&gt;
+  | None eq: Hdec =&gt; find_first_indexed_largest_nat_with_propery_bounded P bound indices&#39;;
+  | (Some n) eq: Hdec =&gt; Some (i, n).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk25" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk25"><span class="kn">Lemma</span> <span class="nf">find_first_indexed_largest_nat_with_propery_bounded_Some</span> {<span class="nv">index</span>}
+  (<span class="nv">P</span> : index -&gt; nat -&gt; <span class="kt">Prop</span>) `{!RelDecision P}
+  (bound : index -&gt; nat)
+  (indices : list index) (Hindices : NoDup indices)
+  : <span class="kr">forall</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+      find_first_indexed_largest_nat_with_propery_bounded P bound indices = Some (i, n)
+        &lt;-&gt;
+      i ∈ indices /\
+      find_largest_nat_with_property_bounded (P i) (bound i) = Some n /\
+      <span class="kr">forall</span> (<span class="nv">prefix</span> <span class="nv">suffix</span> : list index),
+        indices = prefix ++ [i] ++ suffix -&gt;
+        <span class="kr">forall</span> (<span class="nv">j</span> : index), j ∈ prefix -&gt;
+        find_largest_nat_with_property_bounded (P j) (bound j) = None.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+  find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = Some (i, n)
+  ↔ i ∈ indices
+    ∧ find_largest_nat_with_property_bounded (P i)
+        (bound i) = Some n
+      ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+           indices = prefix ++ [i] ++ suffix
+           → <span class="kr">∀</span> <span class="nv">j</span> : index,
+               j ∈ prefix
+               → find_largest_nat_with_property_bounded
+                   (P j) (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk26" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk26"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+  find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = Some (i, n)
+  ↔ i ∈ indices
+    ∧ find_largest_nat_with_property_bounded 
+        (P i) (bound i) = 
+      Some n
+      ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+           indices = prefix ++ [i] ++ suffix
+           → <span class="kr">∀</span> <span class="nv">j</span> : index,
+               j ∈ prefix
+               → find_largest_nat_with_property_bounded
+                   (P j) 
+                   (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk27" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk27"><span class="nb">induction</span> indices; simp find_first_indexed_largest_nat_with_propery_bounded.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup []</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+  None = Some (i, n)
+  ↔ i ∈ []
+    ∧ find_largest_nat_with_property_bounded 
+        (P i) (bound i) = 
+      Some n
+      ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+           [] = prefix ++ [i] ++ suffix
+           → <span class="kr">∀</span> <span class="nv">j</span> : index,
+               j ∈ prefix
+               → find_largest_nat_with_property_bounded
+                   (P j) 
+                   (bound j) = None)</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk28" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup (a :: indices)</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk28"><hr></label><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+  find_first_indexed_largest_nat_with_propery_bounded_clause_2
+    (@find_first_indexed_largest_nat_with_propery_bounded)
+    index P RelDecision0 bound a
+    (inspect
+       (find_largest_nat_with_property_bounded 
+          (P a) (bound a))) indices = 
+  Some (i, n)
+  ↔ i ∈ a :: indices
+    ∧ find_largest_nat_with_property_bounded 
+        (P i) (bound i) = 
+      Some n
+      ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+           a :: indices = prefix ++ [i] ++ suffix
+           → <span class="kr">∀</span> <span class="nv">j</span> : index,
+               j ∈ prefix
+               → find_largest_nat_with_property_bounded
+                   (P j) 
+                   (bound j) = None)</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk29" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk29">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup []</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+  None = Some (i, n)
+  ↔ i ∈ []
+    ∧ find_largest_nat_with_property_bounded 
+        (P i) (bound i) = 
+      Some n
+      ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+           [] = prefix ++ [i] ++ suffix
+           → <span class="kr">∀</span> <span class="nv">j</span> : index,
+               j ∈ prefix
+               → find_largest_nat_with_property_bounded
+                   (P j) 
+                   (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">split</span>; [<span class="nb">inversion</span> <span class="mi">1</span> | <span class="nb">intros</span> [Hcontra]; <span class="nb">inversion</span> Hcontra].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk2a" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk2a">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup (a :: indices)</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+  find_first_indexed_largest_nat_with_propery_bounded_clause_2
+    (@find_first_indexed_largest_nat_with_propery_bounded)
+    index P RelDecision0 bound a
+    (inspect
+       (find_largest_nat_with_property_bounded 
+          (P a) (bound a))) indices = 
+  Some (i, n)
+  ↔ i ∈ a :: indices
+    ∧ find_largest_nat_with_property_bounded 
+        (P i) (bound i) = 
+      Some n
+      ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+           a :: indices = prefix ++ [i] ++ suffix
+           → <span class="kr">∀</span> <span class="nv">j</span> : index,
+               j ∈ prefix
+               → find_largest_nat_with_property_bounded
+                   (P j) 
+                   (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk2b" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk2b"><span class="nb">apply</span> NoDup_cons <span class="kr">in</span> Hindices <span class="kr">as</span> [Ha Hindices].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+  find_first_indexed_largest_nat_with_propery_bounded_clause_2
+    (@find_first_indexed_largest_nat_with_propery_bounded)
+    index P RelDecision0 bound a
+    (inspect
+       (find_largest_nat_with_property_bounded 
+          (P a) (bound a))) indices = 
+  Some (i, n)
+  ↔ i ∈ a :: indices
+    ∧ find_largest_nat_with_property_bounded 
+        (P i) (bound i) = 
+      Some n
+      ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+           a :: indices = prefix ++ [i] ++ suffix
+           → <span class="kr">∀</span> <span class="nv">j</span> : index,
+               j ∈ prefix
+               → find_largest_nat_with_property_bounded
+                   (P j) 
+                   (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk2c" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk2c"><span class="nb">cbn</span>; <span class="nb">split</span>;
+      <span class="nb">destruct</span> (find_largest_nat_with_property_bounded  (P a) (bound a)) <span class="kr">as</span> [_n |] <span class="nb">eqn</span>: Hpos.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n, _n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some _n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Some (a, _n) = Some (i, n)
+→ i ∈ a :: indices
+  ∧ find_largest_nat_with_property_bounded 
+      (P i) (bound i) = 
+    Some n
+    ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+         a :: indices = prefix ++ i :: suffix
+         → <span class="kr">∀</span> <span class="nv">j</span> : index,
+             j ∈ prefix
+             → find_largest_nat_with_property_bounded
+                 (P j) (bound j) = None)</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk2d" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk2d"><hr></label><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded P
+  bound indices = Some (i, n)
+→ i ∈ a :: indices
+  ∧ find_largest_nat_with_property_bounded 
+      (P i) (bound i) = 
+    Some n
+    ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+         a :: indices = prefix ++ i :: suffix
+         → <span class="kr">∀</span> <span class="nv">j</span> : index,
+             j ∈ prefix
+             → find_largest_nat_with_property_bounded
+                 (P j) (bound j) = None)</div></blockquote><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk2e" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n, _n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some _n</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk2e"><hr></label><div class="goal-conclusion">i ∈ a :: indices
+∧ find_largest_nat_with_property_bounded 
+    (P i) (bound i) = Some n
+  ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+       a :: indices = prefix ++ i :: suffix
+       → <span class="kr">∀</span> <span class="nv">j</span> : index,
+           j ∈ prefix
+           → find_largest_nat_with_property_bounded
+               (P j) (bound j) = None)
+→ Some (a, _n) = Some (i, n)</div></blockquote><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk2f" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk2f"><hr></label><div class="goal-conclusion">i ∈ a :: indices
+∧ find_largest_nat_with_property_bounded 
+    (P i) (bound i) = Some n
+  ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+       a :: indices = prefix ++ i :: suffix
+       → <span class="kr">∀</span> <span class="nv">j</span> : index,
+           j ∈ prefix
+           → find_largest_nat_with_property_bounded
+               (P j) (bound j) = None)
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = Some (i, n)</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk30" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk30">+</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n, _n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some _n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Some (a, _n) = Some (i, n)
+→ i ∈ a :: indices
+  ∧ find_largest_nat_with_property_bounded 
+      (P i) (bound i) = 
+    Some n
+    ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+         a :: indices = prefix ++ i :: suffix
+         → <span class="kr">∀</span> <span class="nv">j</span> : index,
+             j ∈ prefix
+             → find_largest_nat_with_property_bounded
+                 (P j) (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk31" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk31"><span class="nb">inversion</span> <span class="mi">1</span>; <span class="nb">subst</span> a _n; split_and!; [<span class="bp">by</span> <span class="nb">left</span> | <span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>i ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>Some (i, n) = Some (i, n)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  i :: indices = prefix ++ i :: suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded 
+          (P j) (bound j) = None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk32" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk32"><span class="nb">intros</span> [| _i prefix] ? Heq; [<span class="bp">by</span> <span class="nb">inversion</span> <span class="mi">1</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>i ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>H</var><span class="hyp-type"><b>: </b><span>Some (i, n) = Some (i, n)</span></span></span><br><span><var>_i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>prefix, suffix</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>i :: indices = (_i :: prefix) ++ i :: suffix</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">j</span> : index,
+  j ∈ _i :: prefix
+  → find_largest_nat_with_property_bounded 
+      (P j) (bound j) = None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk33" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk33"><span class="bp">contradict</span> Ha; simplify_list_eq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>prefix, suffix</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>_i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix ++ _i :: suffix)</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix ++ _i :: suffix)
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound (prefix ++ _i :: suffix) =
+    Some (i, n)
+    ↔ i ∈ prefix ++ _i :: suffix
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix0</span> <span class="nv">suffix0</span> : list index,
+             prefix ++ _i :: suffix =
+             prefix0 ++ i :: suffix0
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix0
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P _i) (bound _i) = Some n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">_i ∈ prefix ++ _i :: suffix</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span> elem_of_app; <span class="nb">right</span>; <span class="nb">left</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk34" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk34">+</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded P
+  bound indices = Some (i, n)
+→ i ∈ a :: indices
+  ∧ find_largest_nat_with_property_bounded 
+      (P i) (bound i) = 
+    Some n
+    ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+         a :: indices = prefix ++ i :: suffix
+         → <span class="kr">∀</span> <span class="nv">j</span> : index,
+             j ∈ prefix
+             → find_largest_nat_with_property_bounded
+                 (P j) (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk35" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk35"><span class="nb">rewrite</span> IHindices <span class="bp">by</span> <span class="bp">done</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">i ∈ indices
+∧ find_largest_nat_with_property_bounded 
+    (P i) (bound i) = Some n
+  ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+       indices = prefix ++ [i] ++ suffix
+       → <span class="kr">∀</span> <span class="nv">j</span> : index,
+           j ∈ prefix
+           → find_largest_nat_with_property_bounded
+               (P j) (bound j) = None)
+→ i ∈ a :: indices
+  ∧ find_largest_nat_with_property_bounded 
+      (P i) (bound i) = 
+    Some n
+    ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+         a :: indices = prefix ++ i :: suffix
+         → <span class="kr">∀</span> <span class="nv">j</span> : index,
+             j ∈ prefix
+             → find_largest_nat_with_property_bounded
+                 (P j) (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk36" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk36"><span class="nb">intros</span> (Hi &amp; Hposition &amp; Hfirst).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ indices</span></span></span><br><span><var>Hposition</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  indices = prefix ++ [i] ++ suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">i ∈ a :: indices
+∧ find_largest_nat_with_property_bounded 
+    (P i) (bound i) = Some n
+  ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+       a :: indices = prefix ++ i :: suffix
+       → <span class="kr">∀</span> <span class="nv">j</span> : index,
+           j ∈ prefix
+           → find_largest_nat_with_property_bounded
+               (P j) (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk37" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk37">split_and!; [<span class="bp">by</span> <span class="nb">right</span> | <span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ indices</span></span></span><br><span><var>Hposition</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  indices = prefix ++ [i] ++ suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  a :: indices = prefix ++ i :: suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded 
+          (P j) (bound j) = None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk38" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk38"><span class="nb">intros</span> [| _a prefix] ? Heq; [<span class="bp">by</span> <span class="nb">inversion</span> <span class="mi">1</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ indices</span></span></span><br><span><var>Hposition</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  indices = prefix ++ [i] ++ suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br><span><var>_a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>prefix, suffix</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Heq</var><span class="hyp-type"><b>: </b><span>a :: indices = (_a :: prefix) ++ i :: suffix</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">j</span> : index,
+  j ∈ _a :: prefix
+  → find_largest_nat_with_property_bounded 
+      (P j) (bound j) = None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk39" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk39">simplify_list_eq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>prefix, suffix</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix ++ i :: suffix)
+→ <span class="kr">∀</span> (<span class="nv">i0</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound (prefix ++ i :: suffix) =
+    Some (i0, n)
+    ↔ i0 ∈ prefix ++ i :: suffix
+      ∧ find_largest_nat_with_property_bounded
+          (P i0) (bound i0) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix0</span> <span class="nv">suffix0</span> : list index,
+             prefix ++ i :: suffix =
+             prefix0 ++ i0 :: suffix0
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix0
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix ++ i :: suffix)</span></span></span><br><span><var>_a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>_a ∉ prefix ++ i :: suffix</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P _a) (bound _a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ prefix ++ i :: suffix</span></span></span><br><span><var>Hposition</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix0</span> <span class="nv">suffix0</span> : list index,
+  prefix ++ i :: suffix =
+  prefix0 ++ i :: suffix0
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix0
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">j</span> : index,
+  j ∈ _a :: prefix
+  → find_largest_nat_with_property_bounded 
+      (P j) (bound j) = None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">inversion</span> <span class="mi">1</span>; [| <span class="nb">eapply</span> Hfirst].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk3a" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk3a">+</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n, _n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some _n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">i ∈ a :: indices
+∧ find_largest_nat_with_property_bounded 
+    (P i) (bound i) = Some n
+  ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+       a :: indices = prefix ++ i :: suffix
+       → <span class="kr">∀</span> <span class="nv">j</span> : index,
+           j ∈ prefix
+           → find_largest_nat_with_property_bounded
+               (P j) (bound j) = None)
+→ Some (a, _n) = Some (i, n)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk3b" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk3b"><span class="nb">intros</span> (Hi &amp; Hposi &amp; Hfirst).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n, _n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some _n</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ a :: indices</span></span></span><br><span><var>Hposi</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  a :: indices = prefix ++ i :: suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Some (a, _n) = Some (i, n)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk3c" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk3c"><span class="nb">apply</span> elem_of_cons <span class="kr">in</span> Hi <span class="kr">as</span> [&lt;- | Hi]; [<span class="bp">congruence</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n, _n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some _n</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ indices</span></span></span><br><span><var>Hposi</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  a :: indices = prefix ++ i :: suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Some (a, _n) = Some (i, n)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk3d" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk3d"><span class="nb">apply</span> elem_of_list_split <span class="kr">in</span> Hi <span class="kr">as</span> (prefix&#39; &amp; suffix &amp; -&gt;).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a, i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>prefix', suffix</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix&#39; ++ i :: suffix)
+→ <span class="kr">∀</span> (<span class="nv">i0</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound (prefix&#39; ++ i :: suffix) =
+    Some (i0, n)
+    ↔ i0 ∈ prefix&#39; ++ i :: suffix
+      ∧ find_largest_nat_with_property_bounded
+          (P i0) (bound i0) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix0</span> : list index,
+             prefix&#39; ++ i :: suffix =
+             prefix ++ [i0] ++ suffix0
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix&#39; ++ i :: suffix)</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ prefix&#39; ++ i :: suffix</span></span></span><br><span><var>n, _n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some _n</span></span></span><br><span><var>Hposi</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix0</span> : list index,
+  a :: prefix&#39; ++ i :: suffix =
+  prefix ++ i :: suffix0
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Some (a, _n) = Some (i, n)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">erewrite</span> Hfirst <span class="kr">in</span> Hpos; [| <span class="nb">rewrite</span> app_comm_cons | <span class="nb">left</span>].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk3e" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk3e">+</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">i ∈ a :: indices
+∧ find_largest_nat_with_property_bounded 
+    (P i) (bound i) = Some n
+  ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+       a :: indices = prefix ++ i :: suffix
+       → <span class="kr">∀</span> <span class="nv">j</span> : index,
+           j ∈ prefix
+           → find_largest_nat_with_property_bounded
+               (P j) (bound j) = None)
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = Some (i, n)</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk3f" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk3f"><span class="nb">intros</span> (Hi &amp; Hposi &amp; Hfirst).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ a :: indices</span></span></span><br><span><var>Hposi</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  a :: indices = prefix ++ i :: suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded P
+  bound indices = Some (i, n)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk40" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk40"><span class="nb">apply</span> elem_of_cons <span class="kr">in</span> Hi <span class="kr">as</span> [&lt;- | Hi]; [<span class="bp">congruence</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ indices</span></span></span><br><span><var>Hposi</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  a :: indices = prefix ++ i :: suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded P
+  bound indices = Some (i, n)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk41" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk41"><span class="nb">apply</span> IHindices; [<span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ indices</span></span></span><br><span><var>Hposi</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  a :: indices = prefix ++ i :: suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">i ∈ indices
+∧ find_largest_nat_with_property_bounded 
+    (P i) (bound i) = Some n
+  ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+       indices = prefix ++ [i] ++ suffix
+       → <span class="kr">∀</span> <span class="nv">j</span> : index,
+           j ∈ prefix
+           → find_largest_nat_with_property_bounded
+               (P j) (bound j) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk42" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk42">split_and!; [<span class="bp">done</span>.. |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ <span class="kr">∀</span> (<span class="nv">i</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound indices = 
+    Some (i, n)
+    ↔ i ∈ indices
+      ∧ find_largest_nat_with_property_bounded
+          (P i) (bound i) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+             indices =
+             prefix ++ [i] ++ suffix
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ indices</span></span></span><br><span><var>Hposi</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  a :: indices = prefix ++ i :: suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">prefix</span> <span class="nv">suffix</span> : list index,
+  indices = prefix ++ [i] ++ suffix
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix
+      → find_largest_nat_with_property_bounded 
+          (P j) (bound j) = None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk43" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk43"><span class="nb">intros</span> prefix suffix -&gt; j Hj.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a, i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>prefix, suffix</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix ++ [i] ++ suffix)
+→ <span class="kr">∀</span> (<span class="nv">i0</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound (prefix ++ [i] ++ suffix) =
+    Some (i0, n)
+    ↔ i0 ∈ prefix ++ [i] ++ suffix
+      ∧ find_largest_nat_with_property_bounded
+          (P i0) (bound i0) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix0</span> <span class="nv">suffix0</span> : list index,
+             prefix ++ [i] ++ suffix =
+             prefix0 ++ [i0] ++ suffix0
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix0
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix ++ [i] ++ suffix)</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ prefix ++ [i] ++ suffix</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ prefix ++ [i] ++ suffix</span></span></span><br><span><var>Hposi</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix0</span> <span class="nv">suffix0</span> : list index,
+  a :: prefix ++ [i] ++ suffix =
+  prefix0 ++ i :: suffix0
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix0
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br><span><var>j</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hj</var><span class="hyp-type"><b>: </b><span>j ∈ prefix</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_largest_nat_with_property_bounded (P j) (bound j) =
+None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk44" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk44"><span class="nb">eapply</span> Hfirst; [| <span class="bp">by</span> <span class="nb">right</span>].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a, i</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>prefix, suffix</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix ++ [i] ++ suffix)
+→ <span class="kr">∀</span> (<span class="nv">i0</span> : index) (<span class="nv">n</span> : nat),
+    find_first_indexed_largest_nat_with_propery_bounded
+      P bound (prefix ++ [i] ++ suffix) =
+    Some (i0, n)
+    ↔ i0 ∈ prefix ++ [i] ++ suffix
+      ∧ find_largest_nat_with_property_bounded
+          (P i0) (bound i0) = 
+        Some n
+        ∧ (<span class="kr">∀</span> <span class="nv">prefix0</span> <span class="nv">suffix0</span> : list index,
+             prefix ++ [i] ++ suffix =
+             prefix0 ++ [i0] ++ suffix0
+             → <span class="kr">∀</span> <span class="nv">j</span> : index,
+                 j ∈ prefix0
+                 → find_largest_nat_with_property_bounded
+                     (P j) 
+                     (bound j) = None)</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup (prefix ++ [i] ++ suffix)</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ prefix ++ [i] ++ suffix</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hpos</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hi</var><span class="hyp-type"><b>: </b><span>i ∈ prefix ++ [i] ++ suffix</span></span></span><br><span><var>Hposi</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P i) (bound i) = Some n</span></span></span><br><span><var>Hfirst</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">prefix0</span> <span class="nv">suffix0</span> : list index,
+  a :: prefix ++ [i] ++ suffix =
+  prefix0 ++ i :: suffix0
+  → <span class="kr">∀</span> <span class="nv">j</span> : index,
+      j ∈ prefix0
+      → find_largest_nat_with_property_bounded
+          (P j) (bound j) = None</span></span></span><br><span><var>j</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>Hj</var><span class="hyp-type"><b>: </b><span>j ∈ prefix</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">a :: prefix ++ [i] ++ suffix =
+(<span class="nl">?y</span> :: prefix) ++ i :: <span class="nl">?suffix</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">      </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> app_comm_cons.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk45" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk45"><span class="kn">Lemma</span> <span class="nf">find_first_indexed_largest_nat_with_propery_bounded_None</span> {<span class="nv">index</span>}
+  (<span class="nv">P</span> : index -&gt; nat -&gt; <span class="kt">Prop</span>) `{!RelDecision P}
+  (bound : index -&gt; nat)
+  (indices : list index) (Hindices : NoDup indices)
+  : find_first_indexed_largest_nat_with_propery_bounded P bound indices = None
+      &lt;-&gt;
+    <span class="kr">forall</span> (<span class="nv">i</span> : index), i ∈ indices -&gt;
+      find_largest_nat_with_property_bounded (P i) (bound i) = None.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded P
+  bound indices = None
+↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+     i ∈ indices
+     → find_largest_nat_with_property_bounded (P i)
+         (bound i) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk46" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk46"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded P
+  bound indices = None
+↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+     i ∈ indices
+     → find_largest_nat_with_property_bounded 
+         (P i) (bound i) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk47" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk47"><span class="nb">induction</span> indices; simp find_first_indexed_largest_nat_with_propery_bounded;
+    [<span class="bp">by</span> <span class="nb">split</span>; [<span class="nb">inversion</span> <span class="mi">2</span> |] |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup (a :: indices)</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded_clause_2
+  (@find_first_indexed_largest_nat_with_propery_bounded)
+  index P RelDecision0 bound a
+  (inspect
+     (find_largest_nat_with_property_bounded 
+        (P a) (bound a))) indices = None
+↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+     i ∈ a :: indices
+     → find_largest_nat_with_property_bounded 
+         (P i) (bound i) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk48" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk48"><span class="nb">apply</span> NoDup_cons <span class="kr">in</span> Hindices <span class="kr">as</span> [Ha Hindices].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded_clause_2
+  (@find_first_indexed_largest_nat_with_propery_bounded)
+  index P RelDecision0 bound a
+  (inspect
+     (find_largest_nat_with_property_bounded 
+        (P a) (bound a))) indices = None
+↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+     i ∈ a :: indices
+     → find_largest_nat_with_property_bounded 
+         (P i) (bound i) = None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk49" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk49"><span class="nb">cbn</span>; <span class="nb">split</span>; <span class="nb">destruct</span> find_largest_nat_with_property_bounded <span class="nb">eqn</span>: Hp; [<span class="bp">done</span> | | |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded P
+  bound indices = None
+→ <span class="kr">∀</span> <span class="nv">i</span> : index,
+    i ∈ a :: indices
+    → find_largest_nat_with_property_bounded 
+        (P i) (bound i) = None</div></blockquote><div class="alectryon-extra-goals"><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk4a" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some n</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk4a"><hr></label><div class="goal-conclusion">(<span class="kr">∀</span> <span class="nv">i</span> : index,
+   i ∈ a :: indices
+   → find_largest_nat_with_property_bounded 
+       (P i) (bound i) = None) → 
+Some (a, n) = None</div></blockquote><input class="alectryon-extra-goal-toggle" id="NatExtras-v-chk4b" style="display: none" type="checkbox"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br></div><label class="goal-separator" for="NatExtras-v-chk4b"><hr></label><div class="goal-conclusion">(<span class="kr">∀</span> <span class="nv">i</span> : index,
+   i ∈ a :: indices
+   → find_largest_nat_with_property_bounded 
+       (P i) (bound i) = None)
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk4c" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk4c">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded P
+  bound indices = None
+→ <span class="kr">∀</span> <span class="nv">i</span> : index,
+    i ∈ a :: indices
+    → find_largest_nat_with_property_bounded 
+        (P i) (bound i) = None</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">intros</span> Hnone i Hi; <span class="nb">apply</span> elem_of_cons <span class="kr">in</span> Hi <span class="kr">as</span>  [-&gt; | Hi]; [| <span class="nb">eapply</span> IHindices].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk4d" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk4d">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some n</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">∀</span> <span class="nv">i</span> : index,
+   i ∈ a :: indices
+   → find_largest_nat_with_property_bounded 
+       (P i) (bound i) = None) → 
+Some (a, n) = None</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk4e" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk4e"><span class="nb">intro</span> Hmin.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some n</span></span></span><br><span><var>Hmin</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  i ∈ a :: indices
+  → find_largest_nat_with_property_bounded
+      (P i) (bound i) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Some (a, n) = None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk4f" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk4f"><span class="nb">replace</span> (find_largest_nat_with_property_bounded (P a) (bound a))
+      <span class="kr">with</span> (@None nat) <span class="kr">in</span> Hp; [<span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = Some n</span></span></span><br><span><var>Hmin</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  i ∈ a :: indices
+  → find_largest_nat_with_property_bounded
+      (P i) (bound i) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">None =
+find_largest_nat_with_property_bounded (P a) (bound a)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">symmetry</span>; <span class="nb">apply</span> Hmin; <span class="nb">left</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk50" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk50">-</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">∀</span> <span class="nv">i</span> : index,
+   i ∈ a :: indices
+   → find_largest_nat_with_property_bounded 
+       (P i) (bound i) = None)
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk51" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk51"><span class="nb">intros</span> Hmin.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hmin</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  i ∈ a :: indices
+  → find_largest_nat_with_property_bounded
+      (P i) (bound i) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">find_first_indexed_largest_nat_with_propery_bounded P
+  bound indices = None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NatExtras-v-chk52" style="display: none" type="checkbox"><label class="alectryon-input" for="NatExtras-v-chk52"><span class="nb">apply</span> IHindices; [<span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>index</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>index → nat → <span class="kt">Prop</span></span></span></span><br><span><var>RelDecision0</var><span class="hyp-type"><b>: </b><span>RelDecision P</span></span></span><br><span><var>bound</var><span class="hyp-type"><b>: </b><span>index → nat</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>index</span></span></span><br><span><var>indices</var><span class="hyp-type"><b>: </b><span>list index</span></span></span><br><span><var>Ha</var><span class="hyp-type"><b>: </b><span>a ∉ indices</span></span></span><br><span><var>Hindices</var><span class="hyp-type"><b>: </b><span>NoDup indices</span></span></span><br><span><var>IHindices</var><span class="hyp-type"><b>: </b><span>NoDup indices
+→ find_first_indexed_largest_nat_with_propery_bounded
+    P bound indices = None
+  ↔ (<span class="kr">∀</span> <span class="nv">i</span> : index,
+       i ∈ indices
+       → find_largest_nat_with_property_bounded
+           (P i) (bound i) = None)</span></span></span><br><span><var>Hp</var><span class="hyp-type"><b>: </b><span>find_largest_nat_with_property_bounded 
+  (P a) (bound a) = None</span></span></span><br><span><var>Hmin</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">i</span> : index,
+  i ∈ a :: indices
+  → find_largest_nat_with_property_bounded
+      (P i) (bound i) = None</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">i</span> : index,
+  i ∈ indices
+  → find_largest_nat_with_property_bounded 
+      (P i) (bound i) = None</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">intros</span>; <span class="nb">apply</span> Hmin; <span class="nb">right</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span></span></pre></article></body></html>
