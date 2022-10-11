@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename">
+	<script>
+	  if (document.title === "Table of Contents") {
+	      document.write("<a href='map.svg'>File dependency graph</a>");
+	  } else {
+              document.write("<a href='" + document.title + ".svg'>" + document.title + " dependency graph</a>");
+	  }
+	</script>
+      </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">VLSM.Lib</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="VLSM.Lib.SsrExport.html#"><span class="id" title="library">SsrExport</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Unset</span> <span class="id" title="keyword">Strict</span> <span class="id" title="keyword">Implicit</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Prenex</span> <span class="id" title="var">Implicits</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab43"></a><h1 class="section">Definition of possibly-infinite traces</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">invs</span> <span class="id" title="var">h</span> := <span class="id" title="tactic">inversion</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">subst</span> =&gt; {<span class="id" title="var">h</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="Traces" class="idref" href="#Traces"><span class="id" title="section">Traces</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span> {<a id="A:1" class="idref" href="#A:1"><span class="id" title="binder">A</span></a> <a id="B:2" class="idref" href="#B:2"><span class="id" title="binder">B</span></a> : <span class="id" title="keyword">Type</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab44"></a><h2 class="section">Core trace definition and decomposition</h2>
+
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+  This definition is similar to that for lazy lists from Chapter 13
+  of the <a href="https://github.com/coq-community/coq-art">Coq'Art book</a>.
+  However, to support traces following labeled transition relations, constructors
+  have additional elements.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">CoInductive</span> <a id="trace" class="idref" href="#trace"><span class="id" title="inductive">trace</span></a> : <span class="id" title="keyword">Type</span> :=<br/>
+| <a id="Tnil" class="idref" href="#Tnil"><span class="id" title="constructor">Tnil</span></a> : <a class="idref" href="VLSM.Lib.Traces.html#Traces.A"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#trace:3"><span class="id" title="inductive">trace</span></a><br/>
+| <a id="Tcons" class="idref" href="#Tcons"><span class="id" title="constructor">Tcons</span></a> : <a class="idref" href="VLSM.Lib.Traces.html#Traces.A"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#Traces.B"><span class="id" title="variable">B</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#trace:3"><span class="id" title="inductive">trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#trace:3"><span class="id" title="inductive">trace</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="hd" class="idref" href="#hd"><span class="id" title="definition">hd</span></a> <a id="tr:5" class="idref" href="#tr:5"><span class="id" title="binder">tr</span></a> :=<br/>
+<span class="id" title="keyword">match</span> <a class="idref" href="VLSM.Lib.Traces.html#tr:5"><span class="id" title="variable">tr</span></a> <span class="id" title="keyword">with</span><br/>
+| <a class="idref" href="VLSM.Lib.Traces.html#Tnil"><span class="id" title="constructor">Tnil</span></a> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span><br/>
+| <a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">tr0</span> =&gt; <span class="id" title="var">a</span><br/>
+<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="trace_decompose" class="idref" href="#trace_decompose"><span class="id" title="definition">trace_decompose</span></a> (<a id="tr:7" class="idref" href="#tr:7"><span class="id" title="binder">tr</span></a>: <a class="idref" href="VLSM.Lib.Traces.html#trace"><span class="id" title="inductive">trace</span></a>): <a class="idref" href="VLSM.Lib.Traces.html#trace"><span class="id" title="inductive">trace</span></a> :=<br/>
+<span class="id" title="keyword">match</span> <a class="idref" href="VLSM.Lib.Traces.html#tr:7"><span class="id" title="variable">tr</span></a> <span class="id" title="keyword">with</span><br/>
+| <a class="idref" href="VLSM.Lib.Traces.html#Tnil"><span class="id" title="constructor">Tnil</span></a> <span class="id" title="var">a</span> =&gt; <a class="idref" href="VLSM.Lib.Traces.html#Tnil"><span class="id" title="constructor">Tnil</span></a> <span class="id" title="var">a</span><br/>
+| <a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">tr'</span> =&gt; <a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">tr'</span><br/>
+<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="trace_destr" class="idref" href="#trace_destr"><span class="id" title="lemma">trace_destr</span></a>: <span class="id" title="keyword">forall</span> <a id="tr:9" class="idref" href="#tr:9"><span class="id" title="binder">tr</span></a>, <a class="idref" href="VLSM.Lib.Traces.html#tr:9"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="VLSM.Lib.Traces.html#trace_decompose"><span class="id" title="definition">trace_decompose</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr:9"><span class="id" title="variable">tr</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">case</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab45"></a><h2 class="section">Bisimulations between traces</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">CoInductive</span> <a id="bisim" class="idref" href="#bisim"><span class="id" title="inductive">bisim</span></a> : <a class="idref" href="VLSM.Lib.Traces.html#trace"><span class="id" title="inductive">trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#trace"><span class="id" title="inductive">trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
+| <a id="bisim_nil" class="idref" href="#bisim_nil"><span class="id" title="constructor">bisim_nil</span></a> : <span class="id" title="keyword">forall</span> <a id="a:12" class="idref" href="#a:12"><span class="id" title="binder">a</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Lib.Traces.html#bisim:10"><span class="id" title="inductive">bisim</span></a> (<a class="idref" href="VLSM.Lib.Traces.html#Tnil"><span class="id" title="constructor">Tnil</span></a> <a class="idref" href="VLSM.Lib.Traces.html#a:12"><span class="id" title="variable">a</span></a>) (<a class="idref" href="VLSM.Lib.Traces.html#Tnil"><span class="id" title="constructor">Tnil</span></a> <a class="idref" href="VLSM.Lib.Traces.html#a:12"><span class="id" title="variable">a</span></a>)<br/>
+| <a id="bisim_cons" class="idref" href="#bisim_cons"><span class="id" title="constructor">bisim_cons</span></a> : <span class="id" title="keyword">forall</span> <a id="a:13" class="idref" href="#a:13"><span class="id" title="binder">a</span></a> <a id="b:14" class="idref" href="#b:14"><span class="id" title="binder">b</span></a> <a id="tr:15" class="idref" href="#tr:15"><span class="id" title="binder">tr</span></a> <a id="tr':16" class="idref" href="#tr':16"><span class="id" title="binder">tr'</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Lib.Traces.html#bisim:10"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr:15"><span class="id" title="variable">tr</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr':16"><span class="id" title="variable">tr'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Lib.Traces.html#bisim:10"><span class="id" title="inductive">bisim</span></a> (<a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <a class="idref" href="VLSM.Lib.Traces.html#a:13"><span class="id" title="variable">a</span></a> <a class="idref" href="VLSM.Lib.Traces.html#b:14"><span class="id" title="variable">b</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr:15"><span class="id" title="variable">tr</span></a>) (<a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <a class="idref" href="VLSM.Lib.Traces.html#a:13"><span class="id" title="variable">a</span></a> <a class="idref" href="VLSM.Lib.Traces.html#b:14"><span class="id" title="variable">b</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr':16"><span class="id" title="variable">tr'</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="bisim_refl" class="idref" href="#bisim_refl"><span class="id" title="lemma">bisim_refl</span></a> : <span class="id" title="keyword">forall</span> <a id="tr:17" class="idref" href="#tr:17"><span class="id" title="binder">tr</span></a>, <a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr:17"><span class="id" title="variable">tr</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr:17"><span class="id" title="variable">tr</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="keyword">cofix</span> <span class="id" title="var">CIH</span>.<br/>
+<span class="id" title="tactic">case</span> =&gt; [<span class="id" title="var">a</span>|<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">tr</span>]; <span class="id" title="tactic">first</span> <span class="id" title="tactic">exact</span>: <a class="idref" href="VLSM.Lib.Traces.html#bisim_nil"><span class="id" title="constructor">bisim_nil</span></a>.<br/>
+<span class="id" title="tactic">exact</span>/<a class="idref" href="VLSM.Lib.Traces.html#bisim_cons"><span class="id" title="constructor">bisim_cons</span></a>/<span class="id" title="var">CIH</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="bisim_sym" class="idref" href="#bisim_sym"><span class="id" title="lemma">bisim_sym</span></a> : <span class="id" title="keyword">forall</span> <a id="tr1:18" class="idref" href="#tr1:18"><span class="id" title="binder">tr1</span></a> <a id="tr2:19" class="idref" href="#tr2:19"><span class="id" title="binder">tr2</span></a>, <a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr1:18"><span class="id" title="variable">tr1</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr2:19"><span class="id" title="variable">tr2</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr2:19"><span class="id" title="variable">tr2</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr1:18"><span class="id" title="variable">tr1</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="keyword">cofix</span> <span class="id" title="var">CIH</span>.<br/>
+<span class="id" title="tactic">case</span> =&gt; [<span class="id" title="var">a</span>|<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">tr1</span>] <span class="id" title="var">tr2</span> <span class="id" title="var">Hbs</span>; <span class="id" title="var">invs</span> <span class="id" title="var">Hbs</span>; <span class="id" title="tactic">first</span> <span class="id" title="tactic">exact</span>: <a class="idref" href="VLSM.Lib.Traces.html#bisim_nil"><span class="id" title="constructor">bisim_nil</span></a>.<br/>
+<span class="id" title="tactic">exact</span>/<a class="idref" href="VLSM.Lib.Traces.html#bisim_cons"><span class="id" title="constructor">bisim_cons</span></a>/<span class="id" title="var">CIH</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="bisim_trans" class="idref" href="#bisim_trans"><span class="id" title="lemma">bisim_trans</span></a> : <span class="id" title="keyword">forall</span> <a id="tr1:20" class="idref" href="#tr1:20"><span class="id" title="binder">tr1</span></a> <a id="tr2:21" class="idref" href="#tr2:21"><span class="id" title="binder">tr2</span></a> <a id="tr3:22" class="idref" href="#tr3:22"><span class="id" title="binder">tr3</span></a>,<br/>
+&nbsp;<a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr1:20"><span class="id" title="variable">tr1</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr2:21"><span class="id" title="variable">tr2</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr2:21"><span class="id" title="variable">tr2</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr3:22"><span class="id" title="variable">tr3</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr1:20"><span class="id" title="variable">tr1</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr3:22"><span class="id" title="variable">tr3</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="keyword">cofix</span> <span class="id" title="var">CIH</span>.<br/>
+<span class="id" title="tactic">case</span> =&gt; [<span class="id" title="var">a</span>|<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">tr1</span>] <span class="id" title="var">tr2</span> <span class="id" title="var">tr0</span> <span class="id" title="var">Hbs</span> <span class="id" title="var">Hbs'</span>; <span class="id" title="var">invs</span> <span class="id" title="var">Hbs</span>; <span class="id" title="var">invs</span> <span class="id" title="var">Hbs'</span>; <span class="id" title="tactic">first</span> <span class="id" title="tactic">exact</span>: <a class="idref" href="VLSM.Lib.Traces.html#bisim_nil"><span class="id" title="constructor">bisim_nil</span></a>.<br/>
+<span class="id" title="tactic">exact</span>: (<a class="idref" href="VLSM.Lib.Traces.html#bisim_cons"><span class="id" title="constructor">bisim_cons</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">CIH</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">H3</span> <span class="id" title="var">H4</span>)).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="bisim_hd" class="idref" href="#bisim_hd"><span class="id" title="lemma">bisim_hd</span></a>: <span class="id" title="keyword">forall</span> <a id="tr0:23" class="idref" href="#tr0:23"><span class="id" title="binder">tr0</span></a> <a id="tr1:24" class="idref" href="#tr1:24"><span class="id" title="binder">tr1</span></a>, <a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr0:23"><span class="id" title="variable">tr0</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr1:24"><span class="id" title="variable">tr1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#hd"><span class="id" title="definition">hd</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr0:23"><span class="id" title="variable">tr0</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="VLSM.Lib.Traces.html#hd"><span class="id" title="definition">hd</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr1:24"><span class="id" title="variable">tr1</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">tr0</span> <span class="id" title="var">tr1</span> []. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab46"></a><h2 class="section">Appending traces to one another</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">CoFixpoint</span> <a id="trace_append" class="idref" href="#trace_append"><span class="id" title="definition">trace_append</span></a> (<a id="tr:25" class="idref" href="#tr:25"><span class="id" title="binder">tr</span></a> <a id="tr':26" class="idref" href="#tr':26"><span class="id" title="binder">tr'</span></a>: <a class="idref" href="VLSM.Lib.Traces.html#trace"><span class="id" title="inductive">trace</span></a>): <a class="idref" href="VLSM.Lib.Traces.html#trace"><span class="id" title="inductive">trace</span></a> :=<br/>
+<span class="id" title="keyword">match</span> <a class="idref" href="VLSM.Lib.Traces.html#tr:25"><span class="id" title="variable">tr</span></a> <span class="id" title="keyword">with</span><br/>
+| <a class="idref" href="VLSM.Lib.Traces.html#Tnil"><span class="id" title="constructor">Tnil</span></a> <span class="id" title="var">a</span> =&gt; <a class="idref" href="VLSM.Lib.Traces.html#tr':26"><span class="id" title="variable">tr'</span></a><br/>
+| <a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">tr0</span> =&gt; <a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<a class="idref" href="VLSM.Lib.Traces.html#trace_append:27"><span class="id" title="definition">trace_append</span></a> <span class="id" title="var">tr0</span> <a class="idref" href="VLSM.Lib.Traces.html#tr':26"><span class="id" title="variable">tr'</span></a>)<br/>
+<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">local</span>] <span class="id" title="keyword">Infix</span> "+++" := <a class="idref" href="VLSM.Lib.Traces.html#trace_append"><span class="id" title="definition">trace_append</span></a> (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 60, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="trace_append_nil" class="idref" href="#trace_append_nil"><span class="id" title="lemma">trace_append_nil</span></a> : <span class="id" title="keyword">forall</span> <a id="a:29" class="idref" href="#a:29"><span class="id" title="binder">a</span></a> <a id="tr:30" class="idref" href="#tr:30"><span class="id" title="binder">tr</span></a>, <a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">(</span></a><a class="idref" href="VLSM.Lib.Traces.html#Tnil"><span class="id" title="constructor">Tnil</span></a> <a class="idref" href="VLSM.Lib.Traces.html#a:29"><span class="id" title="variable">a</span></a><a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">)</span></a> <a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">+++</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr:30"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr:30"><span class="id" title="variable">tr</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">a</span> <span class="id" title="var">tr</span>.<br/>
+<span class="id" title="tactic">rewrite</span> [<a class="idref" href="VLSM.Lib.Traces.html#Tnil"><span class="id" title="constructor">Tnil</span></a> <span class="id" title="var">a</span> <a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">+++</span></a> <span class="id" title="var">tr</span>]<a class="idref" href="VLSM.Lib.Traces.html#trace_destr"><span class="id" title="lemma">trace_destr</span></a>.<br/>
+<span class="id" title="tactic">by</span> <span class="id" title="tactic">case</span> <span class="id" title="var">tr</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="trace_append_cons" class="idref" href="#trace_append_cons"><span class="id" title="lemma">trace_append_cons</span></a> : <span class="id" title="keyword">forall</span> <a id="a:31" class="idref" href="#a:31"><span class="id" title="binder">a</span></a> <a id="b:32" class="idref" href="#b:32"><span class="id" title="binder">b</span></a> <a id="tr:33" class="idref" href="#tr:33"><span class="id" title="binder">tr</span></a> <a id="tr':34" class="idref" href="#tr':34"><span class="id" title="binder">tr'</span></a>,<br/>
+&nbsp;<a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">(</span></a><a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <a class="idref" href="VLSM.Lib.Traces.html#a:31"><span class="id" title="variable">a</span></a> <a class="idref" href="VLSM.Lib.Traces.html#b:32"><span class="id" title="variable">b</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr:33"><span class="id" title="variable">tr</span></a><a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">)</span></a> <a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">+++</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr':34"><span class="id" title="variable">tr'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <a class="idref" href="VLSM.Lib.Traces.html#a:31"><span class="id" title="variable">a</span></a> <a class="idref" href="VLSM.Lib.Traces.html#b:32"><span class="id" title="variable">b</span></a> (<a class="idref" href="VLSM.Lib.Traces.html#tr:33"><span class="id" title="variable">tr</span></a> <a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">+++</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr':34"><span class="id" title="variable">tr'</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">tr</span> <span class="id" title="var">tr'</span>.<br/>
+<span class="id" title="tactic">rewrite</span> [<a class="idref" href="VLSM.Lib.Traces.html#Tcons"><span class="id" title="constructor">Tcons</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">tr</span> <a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">+++</span></a> <span class="id" title="var">tr'</span>]<a class="idref" href="VLSM.Lib.Traces.html#trace_destr"><span class="id" title="lemma">trace_destr</span></a>.<br/>
+<span class="id" title="tactic">by</span> <span class="id" title="tactic">case</span> <span class="id" title="var">tr</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="trace_append_bism" class="idref" href="#trace_append_bism"><span class="id" title="lemma">trace_append_bism</span></a> : <span class="id" title="keyword">forall</span> <a id="tr1:35" class="idref" href="#tr1:35"><span class="id" title="binder">tr1</span></a> <a id="tr2:36" class="idref" href="#tr2:36"><span class="id" title="binder">tr2</span></a> <a id="tr3:37" class="idref" href="#tr3:37"><span class="id" title="binder">tr3</span></a> <a id="tr4:38" class="idref" href="#tr4:38"><span class="id" title="binder">tr4</span></a>,<br/>
+&nbsp;<a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr1:35"><span class="id" title="variable">tr1</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr2:36"><span class="id" title="variable">tr2</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr3:37"><span class="id" title="variable">tr3</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr4:38"><span class="id" title="variable">tr4</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Lib.Traces.html#bisim"><span class="id" title="inductive">bisim</span></a> (<a class="idref" href="VLSM.Lib.Traces.html#tr1:35"><span class="id" title="variable">tr1</span></a> <a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">+++</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr3:37"><span class="id" title="variable">tr3</span></a>) (<a class="idref" href="VLSM.Lib.Traces.html#tr2:36"><span class="id" title="variable">tr2</span></a> <a class="idref" href="VLSM.Lib.Traces.html#f4e9d6e60009b5429cc5ab7614aaa8c7"><span class="id" title="notation">+++</span></a> <a class="idref" href="VLSM.Lib.Traces.html#tr4:38"><span class="id" title="variable">tr4</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="keyword">cofix</span> <span class="id" title="var">CIH</span>.<br/>
+<span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">tr1</span> <span class="id" title="var">tr2</span> <span class="id" title="var">tr3</span> <span class="id" title="var">tr4</span> [<span class="id" title="var">a1</span> | <span class="id" title="var">a1</span> <span class="id" title="var">b1</span> <span class="id" title="var">tr1'</span> <span class="id" title="var">tr2'</span> <span class="id" title="var">Hbs1'</span>] <span class="id" title="var">Hbs2</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> 2!<a class="idref" href="VLSM.Lib.Traces.html#trace_append_nil"><span class="id" title="lemma">trace_append_nil</span></a>. <span class="id" title="tactic">exact</span>: <span class="id" title="var">Hbs2</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> 2!<a class="idref" href="VLSM.Lib.Traces.html#trace_append_cons"><span class="id" title="lemma">trace_append_cons</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span>/<a class="idref" href="VLSM.Lib.Traces.html#bisim_cons"><span class="id" title="constructor">bisim_cons</span></a>/<span class="id" title="var">CIH</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="VLSM.Lib.Traces.html#Traces"><span class="id" title="section">Traces</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Infix</span> <a id="884a3825e256bb17d8a2d0c65f90e67d" class="idref" href="#884a3825e256bb17d8a2d0c65f90e67d"><span class="id" title="notation">&quot;</span></a>+++" := <a class="idref" href="VLSM.Lib.Traces.html#trace_append"><span class="id" title="definition">trace_append</span></a> (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 60, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>).<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>

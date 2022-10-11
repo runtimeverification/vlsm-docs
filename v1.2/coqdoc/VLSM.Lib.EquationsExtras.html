@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename">
+	<script>
+	  if (document.title === "Table of Contents") {
+	      document.write("<a href='map.svg'>File dependency graph</a>");
+	  } else {
+              document.write("<a href='" + document.title + ".svg'>" + document.title + " dependency graph</a>");
+	  }
+	</script>
+      </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="keyword">Equations</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="library">Equations</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab21"></a><h1 class="section">Equations utility definitions</h1>
+
+
+<div class="paragraph"> </div>
+
+  Definition of <span class="inlinecode"><a class="idref" href="VLSM.Lib.EquationsExtras.html#inspect"><span class="id" title="definition">inspect</span></a></span> is available in Equations as of version 1.3+8.16.
+  Notation <code>eq:</code> is not yet available (exists only in examples).
+
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+  <span class="inlinecode"><a class="idref" href="VLSM.Lib.EquationsExtras.html#inspect"><span class="id" title="definition">inspect</span></a></span> <span class="inlinecode"><span class="id" title="var">x</span></span> allows to pattern-match <span class="inlinecode"><span class="id" title="var">x</span></span> while retaining a propositional
+  equality with <span class="inlinecode"><span class="id" title="var">x</span></span>.
+
+<div class="paragraph"> </div>
+
+  See <a href="https://github.com/mattam82/Coq-Equations/blob/v1.3-8.16/theories/Prop/Logic.vL31"&gt;here&lt;/a&gt;.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="inspect" class="idref" href="#inspect"><span class="id" title="definition">inspect</span></a> {<a id="A:1" class="idref" href="#A:1"><span class="id" title="binder">A</span></a>} (<a id="a:2" class="idref" href="#a:2"><span class="id" title="binder">a</span></a> : <a class="idref" href="VLSM.Lib.EquationsExtras.html#A:1"><span class="id" title="variable">A</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Specif.html#bc4528e836ab0e91ea7e942fb09e898f"><span class="id" title="notation">{</span></a><a id="b:3" class="idref" href="#b:3"><span class="id" title="binder">b</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Specif.html#bc4528e836ab0e91ea7e942fb09e898f"><span class="id" title="notation">|</span></a> <a class="idref" href="VLSM.Lib.EquationsExtras.html#a:2"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="VLSM.Lib.EquationsExtras.html#b:3"><span class="id" title="variable">b</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Specif.html#bc4528e836ab0e91ea7e942fb09e898f"><span class="id" title="notation">}</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Specif.html#exist"><span class="id" title="constructor">exist</span></a> <span class="id" title="var">_</span> <a class="idref" href="VLSM.Lib.EquationsExtras.html#a:2"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#eq_refl"><span class="id" title="constructor">eq_refl</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  The <span class="inlinecode"><a class="idref" href="VLSM.Lib.EquationsExtras.html#inspect"><span class="id" title="definition">inspect</span></a></span> definition is used to pack a value with a proof
+  of an equality to itself. When pattern matching on the first component in
+  this existential type, we keep information about the origin of the pattern
+  available in the second component, the equality.
+
+<div class="paragraph"> </div>
+
+  See <a href="https://github.com/mattam82/Coq-Equations/blob/v1.3-8.16/examples/Basics.vL527"&gt;here&lt;/a&gt;.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Global</span> <span class="id" title="keyword">Notation</span> "x 'eq:' p" := (<a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Specif.html#exist"><span class="id" title="constructor">exist</span></a> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">p</span>) (<span class="id" title="var">only</span> <span class="id" title="var">parsing</span>, <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 20).<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>

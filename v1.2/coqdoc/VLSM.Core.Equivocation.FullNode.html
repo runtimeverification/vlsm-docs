@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename">
+	<script>
+	  if (document.title === "Table of Contents") {
+	      document.write("<a href='map.svg'>File dependency graph</a>");
+	  } else {
+              document.write("<a href='" + document.title + ".svg'>" + document.title + " dependency graph</a>");
+	  }
+	</script>
+      </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">stdpp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">prelude</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">VLSM.Core</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="VLSM.Core.VLSM.html#"><span class="id" title="library">VLSM</span></a> <a class="idref" href="VLSM.Core.VLSMProjections.html#"><span class="id" title="library">VLSMProjections</span></a> <a class="idref" href="VLSM.Core.Composition.html#"><span class="id" title="library">Composition</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">VLSM.Core</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="VLSM.Core.Equivocation.html#"><span class="id" title="library">Equivocation</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="full_node_constraint" class="idref" href="#full_node_constraint"><span class="id" title="section">full_node_constraint</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;`{<a id="EqDecision0:2" class="idref" href="#EqDecision0:2"><span class="id" title="binder">EqDecision</span></a> <a id="EqDecision0:2" class="idref" href="#EqDecision0:2"><span class="id" title="binder">message</span></a>}<br/>
+&nbsp;&nbsp;`{<a id="H:5" class="idref" href="#H:5"><span class="id" title="binder">finite.Finite</span></a> <a id="H:5" class="idref" href="#H:5"><span class="id" title="binder">index</span></a>}<br/>
+&nbsp;&nbsp;(<a id="IM:6" class="idref" href="#IM:6"><span class="id" title="binder">IM</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#index:3"><span class="id" title="variable">index</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Core.VLSM.html#VLSM"><span class="id" title="record">VLSM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#message:1"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;(<a id="Free:7" class="idref" href="#Free:7"><span class="id" title="binder">Free</span></a> := <a class="idref" href="VLSM.Core.Composition.html#free_composite_vlsm"><span class="id" title="definition">free_composite_vlsm</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#IM:6"><span class="id" title="variable">IM</span></a>)<br/>
+&nbsp;&nbsp;`{<a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">forall</span></a> <a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">i</span></a> <a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">:</span></a> <a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">index</span></a><a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">,</span></a> <a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">HasBeenSentCapability</span></a> <a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">(</span></a><a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">IM</span></a> <a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">i</span></a><a id="H0:9" class="idref" href="#H0:9"><span class="id" title="binder">)</span></a>}<br/>
+&nbsp;&nbsp;`{<a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">forall</span></a> <a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">i</span></a> <a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">:</span></a> <a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">index</span></a><a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">,</span></a> <a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">HasBeenReceivedCapability</span></a> <a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">(</span></a><a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">IM</span></a> <a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">i</span></a><a id="H1:11" class="idref" href="#H1:11"><span class="id" title="binder">)</span></a>}<br/>
+&nbsp;&nbsp;(<a id="admissible_index:12" class="idref" href="#admissible_index:12"><span class="id" title="binder">admissible_index</span></a> : <a class="idref" href="VLSM.Core.Composition.html#composite_state"><span class="id" title="definition">composite_state</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#IM:6"><span class="id" title="variable">IM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#index:3"><span class="id" title="variable">index</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+admissible equivocator index: this index can equivocate from given state 
+</div>
+<div class="code">
+&nbsp;&nbsp;.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Given a composite state <code>s</code>, a message <code>m</code>, and a node index <code>i</code>
+  if there is a machine we say that message <code>m</code> can be
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation"><span class="id" title="definition">node_generated_without_further_equivocation</span></a></span> by node <code>i</code> if the message
+  can be produced by node <code>i</code> pre_loaded with all messages in a trace in which
+  all message equivocation is done through messages causing
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.html#no_additional_equivocations"><span class="id" title="definition">no_additional_equivocations</span></a></span> to state <code>s</code> (message <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.html#has_been_directly_observed"><span class="id" title="projection">has_been_directly_observed</span></a></span> in <code>s</code>).
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="node_generated_without_further_equivocation" class="idref" href="#node_generated_without_further_equivocation"><span class="id" title="definition">node_generated_without_further_equivocation</span></a><br/>
+&nbsp;&nbsp;(<a id="s:13" class="idref" href="#s:13"><span class="id" title="binder">s</span></a> : <a class="idref" href="VLSM.Core.Composition.html#composite_state"><span class="id" title="definition">composite_state</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a>)<br/>
+&nbsp;&nbsp;(<a id="m:14" class="idref" href="#m:14"><span class="id" title="binder">m</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.message"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;(<a id="i:15" class="idref" href="#i:15"><span class="id" title="binder">i</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.index"><span class="id" title="variable">index</span></a>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">Prop</span><br/>
+&nbsp;&nbsp;:= <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">exists</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">(</span></a><a id="si:16" class="idref" href="#si:16"><span class="id" title="binder">si</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#vstate"><span class="id" title="definition">vstate</span></a> (<a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:15"><span class="id" title="variable">i</span></a>)<a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">),</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#can_produce"><span class="id" title="definition">can_produce</span></a> (<a class="idref" href="VLSM.Core.VLSM.html#pre_loaded_with_all_messages_vlsm"><span class="id" title="definition">pre_loaded_with_all_messages_vlsm</span></a> (<a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:15"><span class="id" title="variable">i</span></a>)) <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#si:16"><span class="id" title="variable">si</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#m:14"><span class="id" title="variable">m</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"><span class="id" title="notation">/\</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.Equivocation.html#state_received_not_sent_invariant"><span class="id" title="definition">state_received_not_sent_invariant</span></a> (<a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:15"><span class="id" title="variable">i</span></a>) <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#si:16"><span class="id" title="variable">si</span></a> (<a class="idref" href="VLSM.Core.Equivocation.html#composite_has_been_directly_observed"><span class="id" title="definition">composite_has_been_directly_observed</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:13"><span class="id" title="variable">s</span></a>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Similar to the condition above, but now the message is required to be
+  generated by the machine pre-loaded only with messages causing
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.html#no_additional_equivocations"><span class="id" title="definition">no_additional_equivocations</span></a></span> to state <code>s</code>.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="node_generated_without_further_equivocation_alt" class="idref" href="#node_generated_without_further_equivocation_alt"><span class="id" title="definition">node_generated_without_further_equivocation_alt</span></a><br/>
+&nbsp;&nbsp;(<a id="s:17" class="idref" href="#s:17"><span class="id" title="binder">s</span></a> : <a class="idref" href="VLSM.Core.Composition.html#composite_state"><span class="id" title="definition">composite_state</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a>)<br/>
+&nbsp;&nbsp;(<a id="m:18" class="idref" href="#m:18"><span class="id" title="binder">m</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.message"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;(<a id="i:19" class="idref" href="#i:19"><span class="id" title="binder">i</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.index"><span class="id" title="variable">index</span></a>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">Prop</span><br/>
+&nbsp;&nbsp;:= <a class="idref" href="VLSM.Core.VLSM.html#can_emit"><span class="id" title="definition">can_emit</span></a> (<a class="idref" href="VLSM.Core.VLSM.html#pre_loaded_vlsm"><span class="id" title="definition">pre_loaded_vlsm</span></a> (<a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:19"><span class="id" title="variable">i</span></a>) (<a class="idref" href="VLSM.Core.Equivocation.html#composite_has_been_directly_observed"><span class="id" title="definition">composite_has_been_directly_observed</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:17"><span class="id" title="variable">s</span></a>)) <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#m:18"><span class="id" title="variable">m</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  The equivocation-based abstract definition of the full node condition
+  stipulates that a message can be received in a state <code>s</code> if either it causes
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.html#no_additional_equivocations"><span class="id" title="definition">no_additional_equivocations</span></a></span> to state <code>s</code>, or it can be
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation"><span class="id" title="definition">node_generated_without_further_equivocation</span></a></span> by an admissible node.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="full_node_condition_for_admissible_equivocators" class="idref" href="#full_node_condition_for_admissible_equivocators"><span class="id" title="definition">full_node_condition_for_admissible_equivocators</span></a><br/>
+&nbsp;&nbsp;(<a id="l:20" class="idref" href="#l:20"><span class="id" title="binder">l</span></a> : <a class="idref" href="VLSM.Core.Composition.html#composite_label"><span class="id" title="definition">composite_label</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a>)<br/>
+&nbsp;&nbsp;(<a id="som:21" class="idref" href="#som:21"><span class="id" title="binder">som</span></a> : <a class="idref" href="VLSM.Core.Composition.html#composite_state"><span class="id" title="definition">composite_state</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"><span class="id" title="notation">*</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.message"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">Prop</span><br/>
+&nbsp;&nbsp;:=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> (<a id="s:22" class="idref" href="#s:22"><span class="id" title="binder">s</span></a>, <a id="om:23" class="idref" href="#om:23"><span class="id" title="binder">om</span></a>) := <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#som:21"><span class="id" title="variable">som</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#om:23"><span class="id" title="variable">om</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a> =&gt; <span class="id" title="notation">True</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <span class="id" title="var">m</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.Equivocation.html#composite_has_been_directly_observed"><span class="id" title="definition">composite_has_been_directly_observed</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:22"><span class="id" title="variable">s</span></a> <span class="id" title="var">m</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"><span class="id" title="notation">\/</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">exists</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">(</span></a><a id="i:25" class="idref" href="#i:25"><span class="id" title="binder">i</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.index"><span class="id" title="variable">index</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">),</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.admissible_index"><span class="id" title="variable">admissible_index</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:22"><span class="id" title="variable">s</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:25"><span class="id" title="variable">i</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"><span class="id" title="notation">/\</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation"><span class="id" title="definition">node_generated_without_further_equivocation</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:22"><span class="id" title="variable">s</span></a> <span class="id" title="var">m</span> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:25"><span class="id" title="variable">i</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Similar to the condition above, but using the
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation_alt"><span class="id" title="definition">node_generated_without_further_equivocation_alt</span></a></span> property.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="full_node_condition_for_admissible_equivocators_alt" class="idref" href="#full_node_condition_for_admissible_equivocators_alt"><span class="id" title="definition">full_node_condition_for_admissible_equivocators_alt</span></a><br/>
+&nbsp;&nbsp;(<a id="l:26" class="idref" href="#l:26"><span class="id" title="binder">l</span></a> : <a class="idref" href="VLSM.Core.Composition.html#composite_label"><span class="id" title="definition">composite_label</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a>)<br/>
+&nbsp;&nbsp;(<a id="som:27" class="idref" href="#som:27"><span class="id" title="binder">som</span></a> : <a class="idref" href="VLSM.Core.Composition.html#composite_state"><span class="id" title="definition">composite_state</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"><span class="id" title="notation">*</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.message"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">Prop</span><br/>
+&nbsp;&nbsp;:=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> (<a id="s:28" class="idref" href="#s:28"><span class="id" title="binder">s</span></a>, <a id="om:29" class="idref" href="#om:29"><span class="id" title="binder">om</span></a>) := <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#som:27"><span class="id" title="variable">som</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#om:29"><span class="id" title="variable">om</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a> =&gt; <span class="id" title="notation">True</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <span class="id" title="var">m</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.Equivocation.html#composite_has_been_directly_observed"><span class="id" title="definition">composite_has_been_directly_observed</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:28"><span class="id" title="variable">s</span></a> <span class="id" title="var">m</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"><span class="id" title="notation">\/</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">exists</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">(</span></a><a id="i:31" class="idref" href="#i:31"><span class="id" title="binder">i</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.index"><span class="id" title="variable">index</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">),</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.admissible_index"><span class="id" title="variable">admissible_index</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:28"><span class="id" title="variable">s</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:31"><span class="id" title="variable">i</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"><span class="id" title="notation">/\</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation_alt"><span class="id" title="definition">node_generated_without_further_equivocation_alt</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:28"><span class="id" title="variable">s</span></a> <span class="id" title="var">m</span> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:31"><span class="id" title="variable">i</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  We here show that if a machine has the <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.html#cannot_resend_message_stepwise_prop"><span class="id" title="definition">cannot_resend_message_stepwise_prop</span></a></span>erty,
+  then the <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation"><span class="id" title="definition">node_generated_without_further_equivocation</span></a></span> property is stronger
+  than the <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation_alt"><span class="id" title="definition">node_generated_without_further_equivocation_alt</span></a></span> property.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="node_generated_without_further_equivocation_weaken" class="idref" href="#node_generated_without_further_equivocation_weaken"><span class="id" title="lemma">node_generated_without_further_equivocation_weaken</span></a><br/>
+&nbsp;&nbsp;(<a id="i:32" class="idref" href="#i:32"><span class="id" title="binder">i</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.index"><span class="id" title="variable">index</span></a>)<br/>
+&nbsp;&nbsp;(<a id="Hno_resend:33" class="idref" href="#Hno_resend:33"><span class="id" title="binder">Hno_resend</span></a> : <a class="idref" href="VLSM.Core.Equivocation.html#cannot_resend_message_stepwise_prop"><span class="id" title="definition">cannot_resend_message_stepwise_prop</span></a> (<a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:32"><span class="id" title="variable">i</span></a>))<br/>
+&nbsp;&nbsp;(<a id="s:34" class="idref" href="#s:34"><span class="id" title="binder">s</span></a>: <a class="idref" href="VLSM.Core.Composition.html#composite_state"><span class="id" title="definition">composite_state</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a>)<br/>
+&nbsp;&nbsp;(<a id="Hs:35" class="idref" href="#Hs:35"><span class="id" title="binder">Hs</span></a>: <a class="idref" href="VLSM.Core.VLSM.html#valid_state_prop"><span class="id" title="definition">valid_state_prop</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="VLSM.Core.VLSM.html#pre_loaded_with_all_messages_vlsm"><span class="id" title="definition">pre_loaded_with_all_messages_vlsm</span></a> (<a class="idref" href="VLSM.Core.Composition.html#free_composite_vlsm"><span class="id" title="definition">free_composite_vlsm</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a>)) <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:34"><span class="id" title="variable">s</span></a>)<br/>
+&nbsp;&nbsp;(<a id="m:36" class="idref" href="#m:36"><span class="id" title="binder">m</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.message"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;(<a id="Hsmi:37" class="idref" href="#Hsmi:37"><span class="id" title="binder">Hsmi</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation"><span class="id" title="definition">node_generated_without_further_equivocation</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:34"><span class="id" title="variable">s</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#m:36"><span class="id" title="variable">m</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:32"><span class="id" title="variable">i</span></a>)<br/>
+&nbsp;&nbsp;: <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation_alt"><span class="id" title="definition">node_generated_without_further_equivocation_alt</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#s:34"><span class="id" title="variable">s</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#m:36"><span class="id" title="variable">m</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:32"><span class="id" title="variable">i</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hsmi</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">si</span> [<span class="id" title="var">Hsim</span> <span class="id" title="var">Hsi</span>]].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.VLSM.html#can_emit_iff"><span class="id" title="lemma">can_emit_iff</span></a>. <span class="id" title="tactic">exists</span> <span class="id" title="var">si</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">Hsim</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">eapply</span> <a class="idref" href="VLSM.Core.Equivocation.html#lift_generated_to_seeded"><span class="id" title="lemma">lift_generated_to_seeded</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  if all machines satisfy the <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.html#cannot_resend_message_stepwise_prop"><span class="id" title="definition">cannot_resend_message_stepwise_prop</span></a></span>erty,
+  then the <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_condition_for_admissible_equivocators"><span class="id" title="definition">full_node_condition_for_admissible_equivocators</span></a></span> is stronger than
+  the <span class="inlinecode"><a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_condition_for_admissible_equivocators_alt"><span class="id" title="definition">full_node_condition_for_admissible_equivocators_alt</span></a></span>.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="full_node_condition_for_admissible_equivocators_subsumption" class="idref" href="#full_node_condition_for_admissible_equivocators_subsumption"><span class="id" title="lemma">full_node_condition_for_admissible_equivocators_subsumption</span></a><br/>
+&nbsp;&nbsp;(<a id="Hno_resend:39" class="idref" href="#Hno_resend:39"><span class="id" title="binder">Hno_resend</span></a> : <span class="id" title="notation">forall</span> <a id="i:38" class="idref" href="#i:38"><span class="id" title="binder">i</span></a> : <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.index"><span class="id" title="variable">index</span></a><span class="id" title="notation">,</span> <a class="idref" href="VLSM.Core.Equivocation.html#cannot_resend_message_stepwise_prop"><span class="id" title="definition">cannot_resend_message_stepwise_prop</span></a> (<a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#i:38"><span class="id" title="variable">i</span></a>))<br/>
+&nbsp;&nbsp;: <a class="idref" href="VLSM.Core.Composition.html#preloaded_constraint_subsumption"><span class="id" title="definition">preloaded_constraint_subsumption</span></a> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint.IM"><span class="id" title="variable">IM</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_condition_for_admissible_equivocators"><span class="id" title="definition">full_node_condition_for_admissible_equivocators</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_condition_for_admissible_equivocators_alt"><span class="id" title="definition">full_node_condition_for_admissible_equivocators_alt</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">l</span> (<span class="id" title="var">s</span>, [<span class="id" title="var">m</span>|]) [<span class="id" title="var">Hs</span> [<span class="id" title="var">_</span> [<span class="id" title="var">_</span> <span class="id" title="var">Hc</span>]]]; [| <span class="id" title="var">done</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hc</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Hno_equiv</span> | <span class="id" title="var">Hfull</span>]; [<span class="id" title="tactic">by</span> <span class="id" title="tactic">left</span> |].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">right</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hfull</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">i</span> [<span class="id" title="var">Hi</span> <span class="id" title="var">Hfull</span>]].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">i</span>. <span class="id" title="tactic">split</span>; [<span class="id" title="var">done</span> |].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">Hno_resend</span> <span class="id" title="var">i</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#node_generated_without_further_equivocation_weaken"><span class="id" title="lemma">node_generated_without_further_equivocation_weaken</span></a>; [<span class="id" title="var">done</span> | | <span class="id" title="var">done</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">Hs</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.VLSMProjections.VLSMInclusion.html#VLSM_incl_valid_state"><span class="id" title="lemma">VLSM_incl_valid_state</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.Composition.html#preloaded_constraint_free_incl"><span class="id" title="lemma">preloaded_constraint_free_incl</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="VLSM.Core.Equivocation.FullNode.html#full_node_constraint"><span class="id" title="section">full_node_constraint</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>
