@@ -1,0 +1,618 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename">
+	<script>
+	  if (document.title === "Table of Contents") {
+	      document.write("<a href='map.svg'>File dependency graph</a>");
+	  } else if (document.title !== "Index") {
+              document.write("<a href='" + document.title + ".svg'>" + document.title + " dependency graph</a>");
+	  }
+	</script>
+      </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">stdpp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">prelude</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">VLSM.Lib</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="VLSM.Lib.Preamble.html#"><span class="id" title="library">Preamble</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">VLSM.Core</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="VLSM.Core.VLSM.html#"><span class="id" title="library">VLSM</span></a> <a class="idref" href="VLSM.Core.VLSMProjections.html#"><span class="id" title="library">VLSMProjections</span></a> <a class="idref" href="VLSM.Core.Composition.html#"><span class="id" title="library">Composition</span></a> <a class="idref" href="VLSM.Core.ProjectionTraces.html#"><span class="id" title="library">ProjectionTraces</span></a> <a class="idref" href="VLSM.Core.Validator.html#"><span class="id" title="library">Validator</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">VLSM.Core</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="VLSM.Core.PreloadedVLSM.html#"><span class="id" title="library">PreloadedVLSM</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab184"></a><h1 class="section">Core: VLSM Byzantine Traces</h1>
+
+
+<div class="paragraph"> </div>
+
+  In this section, we introduce two definitions of Byzantine traces,
+  prove that they are equivalent (lemma <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_alt_byzantine_iff"><span class="id" title="lemma">byzantine_alt_byzantine_iff</span></a></span>),
+  and then prove that both definitions are equivalent with the definition
+  of a valid trace in the corresponding preloaded VLSM
+  (lemmas <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_preloaded_with_all_messages"><span class="id" title="lemma">byzantine_preloaded_with_all_messages</span></a></span> and
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#preloaded_with_all_messages_alt_eq"><span class="id" title="lemma">preloaded_with_all_messages_alt_eq</span></a></span>).
+
+<div class="paragraph"> </div>
+
+  Note that, contrary to what one might think, the byzantine trace property
+  does not only capture traces exhibiting byzantine behavior, but also all
+  valid traces (consequence of lemma <span class="inlinecode"><a class="idref" href="VLSM.Core.PreloadedVLSM.html#vlsm_incl_preloaded_with_all_messages_vlsm"><span class="id" title="lemma">vlsm_incl_preloaded_with_all_messages_vlsm</span></a></span>).
+  Therefore to avoid confusion we will call <i>proper byzantine traces</i>,
+  or <i>traces exhibiting byzantine behavior</i> the collection of traces with
+  the byzantine trace property but without the valid trace property.
+
+<div class="paragraph"> </div>
+
+  In the remainder of this section, we fix a VLSM <code>M</code>.
+
+<div class="paragraph"> </div>
+
+<a id="lab185"></a><h2 class="section">Definition and basic properties</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="sec_byzantine_traces" class="idref" href="#sec_byzantine_traces"><span class="id" title="section">sec_byzantine_traces</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;{<a id="message:1" class="idref" href="#message:1"><span class="id" title="binder">message</span></a> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<a id="M:2" class="idref" href="#M:2"><span class="id" title="binder">M</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#VLSM"><span class="id" title="record">VLSM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#message:1"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  The first definition says that a trace has the byzantine trace property
+  if it is the projection of a trace which can be obtained by freely composing
+  <code>M</code> with an arbitrary VLSM <code>M'</code> (over the same set of messages).
+
+<div class="paragraph"> </div>
+
+  Below, <span class="inlinecode"><a class="idref" href="VLSM.Core.ProjectionTraces.html#binary_free_composition_fst"><span class="id" title="definition">binary_free_composition_fst</span></a></span> represents the projection of
+  the free composition of <code>M</code> and <code>M'</code> to the component corresponding
+  to <code>M</code>.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="byzantine_trace_prop" class="idref" href="#byzantine_trace_prop"><span class="id" title="definition">byzantine_trace_prop</span></a> (<a id="tr:3" class="idref" href="#tr:3"><span class="id" title="binder">tr</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#Trace"><span class="id" title="inductive">Trace</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">exists</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">(</span></a><a id="M':4" class="idref" href="#M':4"><span class="id" title="binder">M'</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#VLSM"><span class="id" title="record">VLSM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.message"><span class="id" title="variable">message</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">),</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#valid_trace_prop"><span class="id" title="definition">valid_trace_prop</span></a> (<a class="idref" href="VLSM.Core.ProjectionTraces.html#binary_free_composition_fst"><span class="id" title="definition">binary_free_composition_fst</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#M':4"><span class="id" title="variable">M'</span></a>) <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:3"><span class="id" title="variable">tr</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  The first result says that all traces with the byzantine trace property
+  for a VLSM <code>M</code> are traces of the <span class="inlinecode"><a class="idref" href="VLSM.Core.PreloadedVLSM.html#preloaded_with_all_messages_vlsm"><span class="id" title="definition">preloaded_with_all_messages_vlsm</span></a></span>
+  associated to <code>M</code>.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="byzantine_preloaded_with_all_messages" class="idref" href="#byzantine_preloaded_with_all_messages"><span class="id" title="lemma">byzantine_preloaded_with_all_messages</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="notation">forall</span> <span class="id" title="notation">(</span><a id="tr:5" class="idref" href="#tr:5"><span class="id" title="binder">tr</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#Trace"><span class="id" title="inductive">Trace</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a><span class="id" title="notation">),</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_trace_prop"><span class="id" title="definition">byzantine_trace_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:5"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.PreloadedVLSM.html#constrained_trace_prop"><span class="id" title="definition">constrained_trace_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:5"><span class="id" title="variable">tr</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">tr</span> [<span class="id" title="var">M'</span> <span class="id" title="var">Htr</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Htr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ProjectionTraces.html#proj_preloaded_with_all_messages_incl"><span class="id" title="lemma">proj_preloaded_with_all_messages_incl</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">Htr</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab186"></a><h2 class="section">An alternative definition</h2>
+
+
+<div class="paragraph"> </div>
+
+  The alternative definition of byzantine trace property relies on the
+  composition of the VLSM with a special VLSM which can produce all messages.
+
+<div class="paragraph"> </div>
+
+  We will define its type (<span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm_type"><span class="id" title="definition">emit_any_message_vlsm_type</span></a></span>) and the VLSM itself
+  (<span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a></span>) below.
+
+<div class="paragraph"> </div>
+
+  The labels of <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a></span> are its messages and there is a single
+  state.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="emit_any_message_vlsm_type" class="idref" href="#emit_any_message_vlsm_type"><span class="id" title="definition">emit_any_message_vlsm_type</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#VLSMType"><span class="id" title="record">VLSMType</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.message"><span class="id" title="variable">message</span></a> :=<br/>
+{|<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#label"><span class="id" title="projection">label</span></a> := <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.message"><span class="id" title="variable">message</span></a>;<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#state"><span class="id" title="projection">state</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>;<br/>
+|}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  To define the VLSM, we need to prove that the type of states is inhabited,
+  since we need an initial state.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Program Definition</span> <a id="emit_any_message_vlsm_s0" class="idref" href="#emit_any_message_vlsm_s0"><span class="id" title="definition">emit_any_message_vlsm_s0</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#6556914db359db999889decec6a4a562"><span class="id" title="notation">{</span></a><span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#6556914db359db999889decec6a4a562"><span class="id" title="notation">:</span></a> <a class="idref" href="VLSM.Core.VLSM.html#state"><span class="id" title="projection">state</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm_type"><span class="id" title="definition">emit_any_message_vlsm_type</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#6556914db359db999889decec6a4a562"><span class="id" title="notation">|</span></a> <span class="id" title="notation">True</span><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#6556914db359db999889decec6a4a562"><span class="id" title="notation">}</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#exist"><span class="id" title="constructor">exist</span></a> <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Next</span> <span class="id" title="keyword">Obligation</span>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">done</span>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="emit_any_message_vlsm_state_inh" class="idref" href="#emit_any_message_vlsm_state_inh"><span class="id" title="instance">emit_any_message_vlsm_state_inh</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="class">Inhabited</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#6556914db359db999889decec6a4a562"><span class="id" title="notation">{</span></a><span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#6556914db359db999889decec6a4a562"><span class="id" title="notation">:</span></a> <a class="idref" href="VLSM.Core.VLSM.html#state"><span class="id" title="projection">state</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm_type"><span class="id" title="definition">emit_any_message_vlsm_type</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#6556914db359db999889decec6a4a562"><span class="id" title="notation">|</span></a> <span class="id" title="notation">True</span><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#6556914db359db999889decec6a4a562"><span class="id" title="notation">}</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">populate</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm_s0"><span class="id" title="definition">emit_any_message_vlsm_s0</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  The definition of <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm_machine"><span class="id" title="definition">emit_any_message_vlsm_machine</span></a></span> says that:
+<ul class="doclist">
+<li> all states are initial
+
+</li>
+<li> no messages are initial
+
+</li>
+<li> the single state is the initial state
+
+</li>
+<li> the <span class="inlinecode"><a class="idref" href="VLSM.Core.VLSM.html#transition"><span class="id" title="projection">transition</span></a></span> function generates the message given as the label
+
+</li>
+<li> all transitions are valid
+
+</li>
+</ul>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="emit_any_message_vlsm_machine" class="idref" href="#emit_any_message_vlsm_machine"><span class="id" title="definition">emit_any_message_vlsm_machine</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#VLSMMachine"><span class="id" title="record">VLSMMachine</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm_type"><span class="id" title="definition">emit_any_message_vlsm_type</span></a> :=<br/>
+{|<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#initial_state_prop"><span class="id" title="projection">initial_state_prop</span></a> := <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="notation">True</span>;<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#initial_message_prop"><span class="id" title="projection">initial_message_prop</span></a> := <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="notation">False</span>;<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#s0"><span class="id" title="projection">s0</span></a> := <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm_state_inh"><span class="id" title="instance">emit_any_message_vlsm_state_inh</span></a>;<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#transition"><span class="id" title="projection">transition</span></a> := <span class="id" title="keyword">fun</span> <a id="l:6" class="idref" href="#l:6"><span class="id" title="binder">l</span></a> <span class="id" title="var">_</span> =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"><span class="id" title="notation">,</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#l:6"><span class="id" title="variable">l</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"><span class="id" title="notation">)</span></a>;<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#valid"><span class="id" title="projection">valid</span></a> := <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="notation">True</span>;<br/>
+|}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="emit_any_message_vlsm" class="idref" href="#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#VLSM"><span class="id" title="record">VLSM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.message"><span class="id" title="variable">message</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#mk_vlsm"><span class="id" title="constructor">mk_vlsm</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm_machine"><span class="id" title="definition">emit_any_message_vlsm_machine</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Using the VLSM defined above, we can define the alternative byzantine
+  trace property of a trace <code>tr</code> for the VLSM <code>M</code> as being a trace
+  in the projection of the free composition between <code>M</code> and the
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a></span>, to the component corresponding to <code>M</code>.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="alternate_byzantine_trace_prop" class="idref" href="#alternate_byzantine_trace_prop"><span class="id" title="definition">alternate_byzantine_trace_prop</span></a> (<a id="tr:7" class="idref" href="#tr:7"><span class="id" title="binder">tr</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#Trace"><span class="id" title="inductive">Trace</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#valid_trace_prop"><span class="id" title="definition">valid_trace_prop</span></a> (<a class="idref" href="VLSM.Core.ProjectionTraces.html#binary_free_composition_fst"><span class="id" title="definition">binary_free_composition_fst</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a>) <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:7"><span class="id" title="variable">tr</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Since the byzantine trace property was referring to the free composition
+  with any other VLSM, we can instantiate that definition to the
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a></span> to derive that a trace with the
+  alternative byzantine trace property also has the byzantine trace property.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="byzantine_alt_byzantine" class="idref" href="#byzantine_alt_byzantine"><span class="id" title="lemma">byzantine_alt_byzantine</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="notation">forall</span> <span class="id" title="notation">(</span><a id="tr:8" class="idref" href="#tr:8"><span class="id" title="binder">tr</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#Trace"><span class="id" title="inductive">Trace</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a><span class="id" title="notation">),</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.ByzantineTraces.html#alternate_byzantine_trace_prop"><span class="id" title="definition">alternate_byzantine_trace_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:8"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_trace_prop"><span class="id" title="definition">byzantine_trace_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:8"><span class="id" title="variable">tr</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">exists</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab187"></a><h2 class="section">Equivalence between the two Byzantine trace definitions</h2>
+
+
+<div class="paragraph"> </div>
+
+  In this section we prove that the <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#alternate_byzantine_trace_prop"><span class="id" title="definition">alternate_byzantine_trace_prop</span></a></span> is
+  equivalent to <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_trace_prop"><span class="id" title="definition">byzantine_trace_prop</span></a></span>.
+
+<div class="paragraph"> </div>
+
+  Since we have already proven that <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#alternate_byzantine_trace_prop"><span class="id" title="definition">alternate_byzantine_trace_prop</span></a></span>
+  implies <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_trace_prop"><span class="id" title="definition">byzantine_trace_prop</span></a></span> (lemma <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_alt_byzantine"><span class="id" title="lemma">byzantine_alt_byzantine</span></a></span>),
+  and since we know that the traces satisfying <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_trace_prop"><span class="id" title="definition">byzantine_trace_prop</span></a></span>
+  are valid traces for the <span class="inlinecode"><a class="idref" href="VLSM.Core.PreloadedVLSM.html#preloaded_with_all_messages_vlsm"><span class="id" title="definition">preloaded_with_all_messages_vlsm</span></a></span>, to
+  prove the equivalence it is enough to close the circle by proving the
+  VLSM inclusion between the <span class="inlinecode"><a class="idref" href="VLSM.Core.PreloadedVLSM.html#preloaded_with_all_messages_vlsm"><span class="id" title="definition">preloaded_with_all_messages_vlsm</span></a></span> and the
+  projection VLSM used to define <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#alternate_byzantine_trace_prop"><span class="id" title="definition">alternate_byzantine_trace_prop</span></a></span>.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt" class="idref" href="#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt"><span class="id" title="section">sec_preloaded_with_all_messages_byzantine_alt</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Let <code>Alt</code> denote the free composition of <code>M</code> with the <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a></span>,
+  and let <code>Alt1</code> denote the projection of <code>Alt</code> to the component of <code>M</code>.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;(<a id="Alt1:9" class="idref" href="#Alt1:9"><span class="id" title="binder">Alt1</span></a> := <a class="idref" href="VLSM.Core.ProjectionTraces.html#binary_free_composition_fst"><span class="id" title="definition">binary_free_composition_fst</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a>)<br/>
+&nbsp;&nbsp;(<a id="Alt:10" class="idref" href="#Alt:10"><span class="id" title="binder">Alt</span></a> := <a class="idref" href="VLSM.Core.Composition.html#binary_free_composition"><span class="id" title="definition">binary_free_composition</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a>)<br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  First, note that using the results above it is easy to prove the inclusion
+  of <code>Alt1</code> into <code>Preloaded</code>.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="alt_preloaded_with_all_messages_incl" class="idref" href="#alt_preloaded_with_all_messages_incl"><span class="id" title="lemma">alt_preloaded_with_all_messages_incl</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSMProjections.VLSMInclusion.html#VLSM_incl"><span class="id" title="abbreviation">VLSM_incl</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt1"><span class="id" title="variable">Alt1</span></a> (<a class="idref" href="VLSM.Core.PreloadedVLSM.html#preloaded_with_all_messages_vlsm"><span class="id" title="definition">preloaded_with_all_messages_vlsm</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">intros</span> <span class="id" title="var">t</span> <span class="id" title="var">Hvt</span>; <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_preloaded_with_all_messages"><span class="id" title="lemma">byzantine_preloaded_with_all_messages</span></a>, <a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_alt_byzantine"><span class="id" title="lemma">byzantine_alt_byzantine</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  To prove the reverse inclusion (between preloaded <code>M</code> and <code>Alt1</code>) we will use the
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.VLSMProjections.VLSMInclusion.html#basic_VLSM_incl"><span class="id" title="lemma">basic_VLSM_incl</span></a></span> meta-result about proving inclusions between
+  VLSMs which states that:
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> if all valid messages in the first are valid messages in the second, and
+
+</li>
+<li> if all valid states in the first are also valid states in the second, and
+
+</li>
+<li> if all <span class="inlinecode"><a class="idref" href="VLSM.Core.VLSM.html#input_valid_transition"><span class="id" title="definition">input_valid_transition</span></a></span>s in the first are also
+    <span class="inlinecode"><a class="idref" href="VLSM.Core.VLSM.html#input_valid_transition"><span class="id" title="definition">input_valid_transition</span></a></span>s in the second, then
+
+</li>
+<li> the first VLSM is included in the second.
+
+</li>
+</ul>
+
+<div class="paragraph"> </div>
+
+  First note that <i>all</i> messages are valid for <code>Alt</code>, as
+  <span class="inlinecode"><a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a></span> can generate any message without changing state.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="alt_option_valid_message" class="idref" href="#alt_option_valid_message"><span class="id" title="lemma">alt_option_valid_message</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="notation">forall</span> <span class="id" title="notation">(</span><a id="om:11" class="idref" href="#om:11"><span class="id" title="binder">om</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.message"><span class="id" title="variable">message</span></a><span class="id" title="notation">),</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#option_valid_message_prop"><span class="id" title="definition">option_valid_message_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt"><span class="id" title="variable">Alt</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#om:11"><span class="id" title="variable">om</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">m</span> |]; [| <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.VLSM.html#option_valid_message_None"><span class="id" title="lemma">option_valid_message_None</span></a>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">s</span> := <span class="id" title="notation">`</span>`(<a class="idref" href="VLSM.Core.VLSM.html#vs0"><span class="id" title="definition">vs0</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt"><span class="id" title="variable">Alt</span></a>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> (<a class="idref" href="VLSM.Core.VLSM.html#valid_generated_state_message"><span class="id" title="constructor">valid_generated_state_message</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt"><span class="id" title="variable">Alt</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">s</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a> <span class="id" title="var">s</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#existT"><span class="id" title="constructor">existT</span></a> <a class="idref" href="VLSM.Core.Composition.html#second"><span class="id" title="definition">second</span></a> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.VLSM.html#valid_initial_state"><span class="id" title="definition">valid_initial_state</span></a>, <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#proj2_sig"><span class="id" title="definition">proj2_sig</span></a>.. | <span class="id" title="tactic">by</span> <span class="id" title="tactic">split</span> |].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">cbn</span>; <span class="id" title="var">state_update_simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In the projection, all messages are valid. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="alt_proj_option_valid_message" class="idref" href="#alt_proj_option_valid_message"><span class="id" title="lemma">alt_proj_option_valid_message</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="notation">forall</span> <span class="id" title="notation">(</span><a id="m:12" class="idref" href="#m:12"><span class="id" title="binder">m</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.message"><span class="id" title="variable">message</span></a><span class="id" title="notation">),</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#option_valid_message_prop"><span class="id" title="definition">option_valid_message_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt1"><span class="id" title="variable">Alt1</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#m:12"><span class="id" title="variable">m</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.PreloadedVLSM.html#any_message_is_valid_in_preloaded"><span class="id" title="lemma">any_message_is_valid_in_preloaded</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Next we define the "lifting" of a state <code>s</code> from <code>M</code> to <code>Alt</code>,
+  by simply setting to <code>s</code> the  corresponding component of the initial
+  (composite) state <code>s0</code> of <code>Alt</code>.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="lifted_alt_state" class="idref" href="#lifted_alt_state"><span class="id" title="definition">lifted_alt_state</span></a> (<a id="s:13" class="idref" href="#s:13"><span class="id" title="binder">s</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#state"><span class="id" title="projection">state</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a>) : <a class="idref" href="VLSM.Core.VLSM.html#state"><span class="id" title="projection">state</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt"><span class="id" title="variable">Alt</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.Composition.html#lift_to_composite_state'"><span class="id" title="definition">lift_to_composite_state'</span></a> (<a class="idref" href="VLSM.Core.Composition.html#binary_IM"><span class="id" title="definition">binary_IM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#emit_any_message_vlsm"><span class="id" title="definition">emit_any_message_vlsm</span></a>) <a class="idref" href="VLSM.Core.Composition.html#first"><span class="id" title="definition">first</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#s:13"><span class="id" title="variable">s</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Lifting a constrained state of <code>M</code> we obtain a valid state of <code>Alt</code>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="preloaded_alt_valid_state" class="idref" href="#preloaded_alt_valid_state"><span class="id" title="lemma">preloaded_alt_valid_state</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="notation">forall</span> <span class="id" title="notation">(</span><a id="sj:14" class="idref" href="#sj:14"><span class="id" title="binder">sj</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#state"><span class="id" title="projection">state</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a>) (<a id="om:15" class="idref" href="#om:15"><span class="id" title="binder">om</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.message"><span class="id" title="variable">message</span></a><span class="id" title="notation">),</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.PreloadedVLSM.html#constrained_state_message_prop"><span class="id" title="definition">constrained_state_message_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sj:14"><span class="id" title="variable">sj</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#om:15"><span class="id" title="variable">om</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#valid_state_prop"><span class="id" title="definition">valid_state_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt"><span class="id" title="variable">Alt</span></a> (<a class="idref" href="VLSM.Core.ByzantineTraces.html#lifted_alt_state"><span class="id" title="definition">lifted_alt_state</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sj:14"><span class="id" title="variable">sj</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">sj</span> <span class="id" title="var">om</span> <span class="id" title="var">Hp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Hsj</span> : <a class="idref" href="VLSM.Core.PreloadedVLSM.html#constrained_state_prop"><span class="id" title="definition">constrained_state_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a> <span class="id" title="var">sj</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> (<span class="id" title="tactic">exists</span> <span class="id" title="var">om</span>; <span class="id" title="var">done</span>); <span class="id" title="tactic">clear</span> <span class="id" title="var">Hp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">Hsj</span> <span class="id" title="keyword">using</span> <a class="idref" href="VLSM.Core.VLSM.html#valid_state_prop_ind"><span class="id" title="lemma">valid_state_prop_ind</span></a>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.VLSM.html#initial_state_is_valid"><span class="id" title="lemma">initial_state_is_valid</span></a>; <span class="id" title="tactic">intros</span> [] |].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">om'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> (@<a class="idref" href="VLSM.Core.VLSM.html#input_valid_transition_outputs_valid_state_message"><span class="id" title="lemma">input_valid_transition_outputs_valid_state_message</span></a> <span class="id" title="var">_</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt"><span class="id" title="variable">Alt</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#existT"><span class="id" title="constructor">existT</span></a> <a class="idref" href="VLSM.Core.Composition.html#first"><span class="id" title="definition">first</span></a> <span class="id" title="var">l</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="VLSM.Core.ByzantineTraces.html#lifted_alt_state"><span class="id" title="definition">lifted_alt_state</span></a> <span class="id" title="var">s</span>) (<a class="idref" href="VLSM.Core.ByzantineTraces.html#lifted_alt_state"><span class="id" title="definition">lifted_alt_state</span></a> <span class="id" title="var">s'</span>) <span class="id" title="var">om0</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>; <span class="id" title="var">cbn</span>; [<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">IHHsj</span> | <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#alt_option_valid_message"><span class="id" title="lemma">alt_option_valid_message</span></a> | <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">Ht</span> |].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#lifted_alt_state"><span class="id" title="definition">lifted_alt_state</span></a>, <a class="idref" href="VLSM.Core.Composition.html#lift_to_composite_state'"><span class="id" title="definition">lift_to_composite_state'</span></a>, <a class="idref" href="VLSM.Core.Composition.html#lift_to_composite_state"><span class="id" title="definition">lift_to_composite_state</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">state_update_simpl</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Ht</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">_</span> <span class="id" title="var">Ht</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Ht</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Ht</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <a class="idref" href="VLSM.Core.Composition.html#state_update_twice"><span class="id" title="lemma">state_update_twice</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Finally, we can use <span class="inlinecode"><a class="idref" href="VLSM.Core.VLSMProjections.VLSMInclusion.html#basic_VLSM_incl"><span class="id" title="lemma">basic_VLSM_incl</span></a></span> together with the
+  results above to show that <code>Preloaded</code> is included in <code>Alt1</code>.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="preloaded_with_all_messages_alt_incl" class="idref" href="#preloaded_with_all_messages_alt_incl"><span class="id" title="lemma">preloaded_with_all_messages_alt_incl</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSMProjections.VLSMInclusion.html#VLSM_incl"><span class="id" title="abbreviation">VLSM_incl</span></a> (<a class="idref" href="VLSM.Core.PreloadedVLSM.html#preloaded_with_all_messages_vlsm"><span class="id" title="definition">preloaded_with_all_messages_vlsm</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a>) <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt1"><span class="id" title="variable">Alt1</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<a class="idref" href="VLSM.Core.VLSMProjections.VLSMInclusion.html#basic_VLSM_incl"><span class="id" title="lemma">basic_VLSM_incl</span></a> <span class="id" title="var">_</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt1"><span class="id" title="variable">Alt1</span></a>); <span class="id" title="tactic">intro</span>; <span class="id" title="tactic">intros</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="var">done</span> | <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#alt_proj_option_valid_message"><span class="id" title="lemma">alt_proj_option_valid_message</span></a> | | <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<a class="idref" href="VLSM.Core.ByzantineTraces.html#lifted_alt_state"><span class="id" title="definition">lifted_alt_state</span></a> <span class="id" title="var">s</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; [<span class="id" title="var">done</span> |].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hv</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">_om</span> <span class="id" title="var">Hps</span>] [<span class="id" title="var">Hpm</span> <span class="id" title="var">Hv</span>]].<br/>
+&nbsp;&nbsp;<span class="id" title="var">split_and</span>!; [| | <span class="id" title="var">done</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#preloaded_alt_valid_state"><span class="id" title="lemma">preloaded_alt_valid_state</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">Hps</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#alt_option_valid_message"><span class="id" title="lemma">alt_option_valid_message</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Hence, <code>Preloaded</code> and <code>Alt1</code> are actually trace-equivalent. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="preloaded_with_all_messages_alt_eq" class="idref" href="#preloaded_with_all_messages_alt_eq"><span class="id" title="lemma">preloaded_with_all_messages_alt_eq</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSMProjections.VLSMEquality.html#VLSM_eq"><span class="id" title="abbreviation">VLSM_eq</span></a> (<a class="idref" href="VLSM.Core.PreloadedVLSM.html#preloaded_with_all_messages_vlsm"><span class="id" title="definition">preloaded_with_all_messages_vlsm</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a>) <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt.Alt1"><span class="id" title="variable">Alt1</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#preloaded_with_all_messages_alt_incl"><span class="id" title="lemma">preloaded_with_all_messages_alt_incl</span></a>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#alt_preloaded_with_all_messages_incl"><span class="id" title="lemma">alt_preloaded_with_all_messages_incl</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.sec_preloaded_with_all_messages_byzantine_alt"><span class="id" title="section">sec_preloaded_with_all_messages_byzantine_alt</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Finally, we can conclude that the two definitions for byzantine traces are
+  equivalent.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="byzantine_alt_byzantine_iff" class="idref" href="#byzantine_alt_byzantine_iff"><span class="id" title="lemma">byzantine_alt_byzantine_iff</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="notation">forall</span> <span class="id" title="notation">(</span><a id="tr:16" class="idref" href="#tr:16"><span class="id" title="binder">tr</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#Trace"><span class="id" title="inductive">Trace</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces.M"><span class="id" title="variable">M</span></a><span class="id" title="notation">),</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.ByzantineTraces.html#alternate_byzantine_trace_prop"><span class="id" title="definition">alternate_byzantine_trace_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:16"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_trace_prop"><span class="id" title="definition">byzantine_trace_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:16"><span class="id" title="variable">tr</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_alt_byzantine"><span class="id" title="lemma">byzantine_alt_byzantine</span></a>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#preloaded_with_all_messages_alt_incl"><span class="id" title="lemma">preloaded_with_all_messages_alt_incl</span></a>, <a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_preloaded_with_all_messages"><span class="id" title="lemma">byzantine_preloaded_with_all_messages</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_byzantine_traces"><span class="id" title="section">sec_byzantine_traces</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab188"></a><h2 class="section">Byzantine fault tolerance for a single validator</h2>
+
+
+<div class="paragraph"> </div>
+
+  Given that projections of composition of validator VLSMs
+  are equivalent to their corresponding VLSM preloaded with all
+  messages (<span class="inlinecode"><span class="id" title="var">preloaded_with_all_messages_validating_proj_eq</span></span>),
+  we can derive that for validators, all their byzantine traces are
+  included in the valid traces of their projection from the composition.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="sec_single_validator_byzantine_traces" class="idref" href="#sec_single_validator_byzantine_traces"><span class="id" title="section">sec_single_validator_byzantine_traces</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;{<a id="message:17" class="idref" href="#message:17"><span class="id" title="binder">message</span></a> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<a id="EqDecision0:19" class="idref" href="#EqDecision0:19"><span class="id" title="binder">EqDecision</span></a> <a id="index:18" class="idref" href="#index:18"><span class="id" title="binder"><span id="EqDecision0:19" class="id">index</span></span></a>}<br/>
+&nbsp;&nbsp;(<a id="IM:20" class="idref" href="#IM:20"><span class="id" title="binder">IM</span></a> : <a class="idref" href="VLSM.Core.ByzantineTraces.html#index:18"><span class="id" title="variable">index</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Core.VLSM.html#VLSM"><span class="id" title="record">VLSM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#message:17"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;(<a id="constraint:21" class="idref" href="#constraint:21"><span class="id" title="binder">constraint</span></a> : <a class="idref" href="VLSM.Core.Composition.html#composite_label"><span class="id" title="definition">composite_label</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#IM:20"><span class="id" title="variable">IM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Core.Composition.html#composite_state"><span class="id" title="definition">composite_state</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#IM:20"><span class="id" title="variable">IM</span></a>  <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"><span class="id" title="notation">*</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#message:17"><span class="id" title="variable">message</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>)<br/>
+&nbsp;&nbsp;(<a id="i:22" class="idref" href="#i:22"><span class="id" title="binder">i</span></a> : <a class="idref" href="VLSM.Core.ByzantineTraces.html#index:18"><span class="id" title="variable">index</span></a>)<br/>
+&nbsp;&nbsp;(<a id="Hvalidator:23" class="idref" href="#Hvalidator:23"><span class="id" title="binder">Hvalidator</span></a> : <a class="idref" href="VLSM.Core.ProjectionTraces.html#component_projection_validator_prop"><span class="id" title="definition">component_projection_validator_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#IM:20"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#constraint:21"><span class="id" title="variable">constraint</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#i:22"><span class="id" title="variable">i</span></a>)<br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="validator_component_byzantine_fault_tolerance" class="idref" href="#validator_component_byzantine_fault_tolerance"><span class="id" title="lemma">validator_component_byzantine_fault_tolerance</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="notation">forall</span> <span class="id" title="notation">(</span><a id="tr:24" class="idref" href="#tr:24"><span class="id" title="binder">tr</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#Trace"><span class="id" title="inductive">Trace</span></a><span class="id" title="notation">),</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_trace_prop"><span class="id" title="definition">byzantine_trace_prop</span></a> (<a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_single_validator_byzantine_traces.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_single_validator_byzantine_traces.i"><span class="id" title="variable">i</span></a>) <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:24"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#valid_trace_prop"><span class="id" title="definition">valid_trace_prop</span></a> (<a class="idref" href="VLSM.Core.Validator.html#pre_composite_vlsm_induced_projection_validator"><span class="id" title="definition">pre_composite_vlsm_induced_projection_validator</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_single_validator_byzantine_traces.IM"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_single_validator_byzantine_traces.constraint"><span class="id" title="variable">constraint</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_single_validator_byzantine_traces.i"><span class="id" title="variable">i</span></a>) <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:24"><span class="id" title="variable">tr</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">tr</span> <span class="id" title="var">Htr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="VLSM.Core.VLSMProjections.VLSMInclusion.html#VLSM_incl_valid_trace"><span class="id" title="lemma">VLSM_incl_valid_trace</span></a>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ProjectionTraces.html#preloaded_with_all_messages_validator_component_proj_incl"><span class="id" title="definition">preloaded_with_all_messages_validator_component_proj_incl</span></a>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_preloaded_with_all_messages"><span class="id" title="lemma">byzantine_preloaded_with_all_messages</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">Htr</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_single_validator_byzantine_traces"><span class="id" title="section">sec_single_validator_byzantine_traces</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab189"></a><h2 class="section">Byzantine fault tolerance for a composition of validators</h2>
+
+
+<div class="paragraph"> </div>
+
+  In this section we show that if all components of a composite VLSM <code>X</code>
+  satisfy <span class="inlinecode"><a class="idref" href="VLSM.Core.Validator.html#projection_validator_prop"><span class="id" title="definition">projection_validator_prop</span></a></span>, then its byzantine traces (that is,
+  traces obtained upon placing this composition in any, possibly adversarial,
+  context) are valid traces of <code>X</code>.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="sec_composite_validator_byzantine_traces" class="idref" href="#sec_composite_validator_byzantine_traces"><span class="id" title="section">sec_composite_validator_byzantine_traces</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Let us fix an indexed set of VLSMs <code>IM</code> and their
+  constrained composition <code>X</code>, and let <code>PreloadedX</code> be
+  the <span class="inlinecode"><a class="idref" href="VLSM.Core.PreloadedVLSM.html#preloaded_with_all_messages_vlsm"><span class="id" title="definition">preloaded_with_all_messages_vlsm</span></a></span> associated to <code>X</code>.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;{<a id="message:25" class="idref" href="#message:25"><span class="id" title="binder">message</span></a> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<a id="EqDecision0:27" class="idref" href="#EqDecision0:27"><span class="id" title="binder">EqDecision</span></a> <a id="index:26" class="idref" href="#index:26"><span class="id" title="binder"><span id="EqDecision0:27" class="id">index</span></span></a>}<br/>
+&nbsp;&nbsp;(<a id="IM:28" class="idref" href="#IM:28"><span class="id" title="binder">IM</span></a> : <a class="idref" href="VLSM.Core.ByzantineTraces.html#index:26"><span class="id" title="variable">index</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Core.VLSM.html#VLSM"><span class="id" title="record">VLSM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#message:25"><span class="id" title="variable">message</span></a>)<br/>
+&nbsp;&nbsp;(<a id="constraint:29" class="idref" href="#constraint:29"><span class="id" title="binder">constraint</span></a> : <a class="idref" href="VLSM.Core.Composition.html#composite_label"><span class="id" title="definition">composite_label</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#IM:28"><span class="id" title="variable">IM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="VLSM.Core.Composition.html#composite_state"><span class="id" title="definition">composite_state</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#IM:28"><span class="id" title="variable">IM</span></a>  <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"><span class="id" title="notation">*</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#message:25"><span class="id" title="variable">message</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>)<br/>
+&nbsp;&nbsp;(<a id="X:30" class="idref" href="#X:30"><span class="id" title="binder">X</span></a> := <a class="idref" href="VLSM.Core.Composition.html#composite_vlsm"><span class="id" title="definition">composite_vlsm</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#IM:28"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#constraint:29"><span class="id" title="variable">constraint</span></a>)<br/>
+&nbsp;&nbsp;(<a id="Hvalidator:32" class="idref" href="#Hvalidator:32"><span class="id" title="binder">Hvalidator</span></a> : <span class="id" title="notation">forall</span> <a id="i:31" class="idref" href="#i:31"><span class="id" title="binder">i</span></a> : <a class="idref" href="VLSM.Core.ByzantineTraces.html#index:26"><span class="id" title="variable">index</span></a><span class="id" title="notation">,</span> <a class="idref" href="VLSM.Core.ProjectionTraces.html#component_message_validator_prop"><span class="id" title="definition">component_message_validator_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#IM:28"><span class="id" title="variable">IM</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#constraint:29"><span class="id" title="variable">constraint</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#i:31"><span class="id" title="variable">i</span></a>)<br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Since we know that preloaded <code>X</code> contains precisely the byzantine traces
+  of <code>X</code>, we just need to show that preloaded <code>X</code> is included in <code>X</code> to
+  prove our main result.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="validator_preloaded_with_all_messages_incl" class="idref" href="#validator_preloaded_with_all_messages_incl"><span class="id" title="lemma">validator_preloaded_with_all_messages_incl</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSMProjections.VLSMInclusion.html#VLSM_incl"><span class="id" title="abbreviation">VLSM_incl</span></a> (<a class="idref" href="VLSM.Core.PreloadedVLSM.html#preloaded_with_all_messages_vlsm"><span class="id" title="definition">preloaded_with_all_messages_vlsm</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_composite_validator_byzantine_traces.X"><span class="id" title="variable">X</span></a>) <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_composite_validator_byzantine_traces.X"><span class="id" title="variable">X</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.VLSMProjections.VLSMInclusion.html#VLSM_incl_finite_traces_characterization"><span class="id" title="lemma">VLSM_incl_finite_traces_characterization</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">s</span> <span class="id" title="var">tr</span> <span class="id" title="var">Htr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; [| <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">Htr</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Htr</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Htr</span> <span class="id" title="var">Hs</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">Htr</span> <span class="id" title="keyword">using</span> <a class="idref" href="VLSM.Core.VLSM.html#finite_valid_trace_from_rev_ind"><span class="id" title="lemma">finite_valid_trace_from_rev_ind</span></a>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> (<a class="idref" href="VLSM.Core.VLSM.html#finite_valid_trace_from_empty"><span class="id" title="constructor">finite_valid_trace_from_empty</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_composite_validator_byzantine_traces.X"><span class="id" title="variable">X</span></a>), <a class="idref" href="VLSM.Core.VLSM.html#initial_state_is_valid"><span class="id" title="lemma">initial_state_is_valid</span></a> |].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<a class="idref" href="VLSM.Core.VLSM.html#extend_right_finite_trace_from"><span class="id" title="lemma">extend_right_finite_trace_from</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_composite_validator_byzantine_traces.X"><span class="id" title="variable">X</span></a>); [<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">IHHtr</span> |].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hx</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Hvx</span> <span class="id" title="var">Htx</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; [| <span class="id" title="var">done</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.VLSM.html#finite_valid_trace_last_pstate"><span class="id" title="lemma">finite_valid_trace_last_pstate</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">IHHtr</span>; [| <span class="id" title="var">done</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>; [<span class="id" title="var">done</span> | | <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">Hvx</span>..].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hvx</span> <span class="id" title="keyword">as</span> (<span class="id" title="var">Hlst</span> &amp; <span class="id" title="var">_</span> &amp; <span class="id" title="var">Hv</span> &amp; <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">l</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">i</span> <span class="id" title="var">li</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">iom</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">im</span> |]; [| <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.VLSM.html#option_valid_message_None"><span class="id" title="lemma">option_valid_message_None</span></a>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_composite_validator_byzantine_traces.Hvalidator"><span class="id" title="variable">Hvalidator</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">split_and</span>!; [| | <span class="id" title="tactic">by</span> <span class="id" title="var">cbn</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Hv</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">eapply</span> <a class="idref" href="VLSM.Core.Composition.html#valid_state_project_preloaded_to_preloaded"><span class="id" title="lemma">valid_state_project_preloaded_to_preloaded</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">Hlst</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">eexists</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.PreloadedVLSM.html#preloaded_with_all_messages_message_valid_initial_state_message"><span class="id" title="lemma">preloaded_with_all_messages_message_valid_initial_state_message</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Finally, we can conclude that a composition of validator components can
+  resist any kind of external influence.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="composite_validator_byzantine_traces_are_not_byzantine" class="idref" href="#composite_validator_byzantine_traces_are_not_byzantine"><span class="id" title="lemma">composite_validator_byzantine_traces_are_not_byzantine</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="notation">forall</span> <span class="id" title="notation">(</span><a id="tr:33" class="idref" href="#tr:33"><span class="id" title="binder">tr</span></a> : <a class="idref" href="VLSM.Core.VLSM.html#Trace"><span class="id" title="inductive">Trace</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_composite_validator_byzantine_traces.X"><span class="id" title="variable">X</span></a><span class="id" title="notation">),</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_trace_prop"><span class="id" title="definition">byzantine_trace_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_composite_validator_byzantine_traces.X"><span class="id" title="variable">X</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:33"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="VLSM.Core.VLSM.html#valid_trace_prop"><span class="id" title="definition">valid_trace_prop</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_composite_validator_byzantine_traces.X"><span class="id" title="variable">X</span></a> <a class="idref" href="VLSM.Core.ByzantineTraces.html#tr:33"><span class="id" title="variable">tr</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">tr</span> <span class="id" title="var">Hbyz</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#validator_preloaded_with_all_messages_incl"><span class="id" title="lemma">validator_preloaded_with_all_messages_incl</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#byzantine_alt_byzantine_iff"><span class="id" title="lemma">byzantine_alt_byzantine_iff</span></a>, <a class="idref" href="VLSM.Core.ByzantineTraces.html#alt_preloaded_with_all_messages_incl"><span class="id" title="lemma">alt_preloaded_with_all_messages_incl</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">Hbyz</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="VLSM.Core.ByzantineTraces.html#sec_composite_validator_byzantine_traces"><span class="id" title="section">sec_composite_validator_byzantine_traces</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>

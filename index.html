@@ -5,11 +5,13 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>VLSM</title>
-  <style type="text/css">
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
   </style>
   <style type="text/css"> body {font-family: Arial, Helvetica; margin-left: 5em; font-size: large;} </style>
   <style type="text/css"> h1 {margin-left: 0em; padding: 0px; text-align: center} </style>
@@ -26,14 +28,14 @@
 </div>
 <h2 id="about">About</h2>
 <p>Welcome to the VLSM project website!</p>
-<p>A validating labelled state transition and message production system (VLSM) abstractly models a distributed system with faults. This project contains a formalization of VLSMs and their theory in the Coq proof assistant.</p>
+<p>The theory of Validating Labelled State transition and Message production systems (VLSMs) enables describing and proving properties of distributed systems executing in the presence of faults. This project contains a formalization of this theory in the Coq proof assistant along with several examples of distributed protocols modeled and verified using VLSMs, including the ELMO (Equivocation-Limited Message Observer) family of message validating protocols and the Paxos protocol for crash-tolerant distributed consensus.</p>
 <p>This is an open source project, licensed under the BSD 3-Clause “New” or “Revised” License.</p>
 <h2 id="get-the-code">Get the code</h2>
 <p>The latest released version of VLSM can be <a href="https://github.com/runtimeverification/vlsm/releases">downloaded from GitHub</a>.</p>
 <h2 id="documentation">Documentation</h2>
 <ul>
 <li><a href="latest/coqdoc/toc.html">latest coqdoc presentation of the source files</a></li>
-<li><a href="latest/alectryon/toc.html">latest Alectryon presentation the source files</a></li>
+<li><a href="latest/alectryon/toc.html">latest Alectryon presentation of the source files</a></li>
 <li><a href="https://gitlab.mpi-sws.org/iris/stdpp">stdpp library</a></li>
 </ul>
 <h2 id="help">Help</h2>
@@ -48,7 +50,9 @@
 <li>Karl Palmskog</li>
 <li>Lucas Peña</li>
 <li>Grigore Roșu</li>
-<li>Traian Șerbănuță</li>
+<li>Traian Florin Șerbănuță</li>
+<li>Ioan Teodorescu</li>
+<li>Dafina Trufaș</li>
 <li>Jan Tušil</li>
 <li>Vlad Zamfir</li>
 </ul>

@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename">
+	<script>
+	  if (document.title === "Table of Contents") {
+	      document.write("<a href='map.svg'>File dependency graph</a>");
+	  } else if (document.title !== "Index") {
+              document.write("<a href='" + document.title + ".svg'>" + document.title + " dependency graph</a>");
+	  }
+	</script>
+      </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">Cdcl</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="library">Itauto</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1"></a><h1 class="section">Utility: Constructive Itauto Tactic</h1>
+
+
+<div class="paragraph"> </div>
+
+  This module contains a workaround that prevents the itauto tactic from using
+  classical logic.
+
+<div class="paragraph"> </div>
+
+  The problem is that itauto uses classical logic by default if the current
+  module requires (even if only transitively) any module that uses classical
+  logic. For example, most modules about real numbers from the standard library
+  cause itauto to use excluded middle basically each time it's called.
+
+<div class="paragraph"> </div>
+
+  The solution is to redefine the itauto tactic to avoid doing this.
+
+<div class="paragraph"> </div>
+
+  Every time we want to use itauto, we should import it from the current module
+  instead of directly from the Cdcl library.
+
+<div class="paragraph"> </div>
+
+  TODO: This problem was fixed upstream for the Itauto version for Coq 8.18, so
+  this workaround should be removed after the minimum Coq version we support is
+  8.18.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">gen_conflicts</span> <span class="id" title="var">tac</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>; <span class="id" title="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#not"><span class="id" title="definition">not</span></a> <span class="id" title="tactic">in</span> *; <span class="id" title="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#iff"><span class="id" title="definition">iff</span></a> <span class="id" title="tactic">in</span> *;<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cdcl_conflicts</span> <span class="id" title="var">tac</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "itauto" <span class="id" title="var">tactic</span>(<span class="id" title="var">tac</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">gen_conflicts</span> <span class="id" title="var">tac</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">vitautog</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "itauto" :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">itauto</span> <span class="id" title="tactic">auto</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">itautor</span> <span class="id" title="var">tac</span> := <span class="id" title="keyword">let</span> <span class="id" title="var">t</span> := <span class="id" title="tactic">solve</span>[<span class="id" title="var">tac</span> | <span class="id" title="var">itauto</span> <span class="id" title="var">tac</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">itauto</span> <span class="id" title="var">t</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;required&nbsp;for&nbsp;documentation&nbsp;generation&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <a id="iYC2" class="idref" href="#iYC2"><span class="id" title="definition">iYC2</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#True"><span class="id" title="inductive">True</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>

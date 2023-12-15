@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>NeList.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-windowed alectryon-coqdoc"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.18.0+0.18.1. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk0" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk0"><span class="kn">From</span> stdpp <span class="kn">Require Import</span> prelude.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message">[Loading ML file ring_plugin.cmxs (<span class="nb">using</span> legacy method) ... <span class="bp">done</span>]</blockquote><blockquote class="alectryon-message">[Loading ML file zify_plugin.cmxs (<span class="nb">using</span> legacy method) ... <span class="bp">done</span>]</blockquote><blockquote class="alectryon-message">[Loading ML file micromega_plugin.cmxs (<span class="nb">using</span> legacy method) ... <span class="bp">done</span>]</blockquote><blockquote class="alectryon-message">[Loading ML file btauto_plugin.cmxs (<span class="nb">using</span> legacy method) ... <span class="bp">done</span>]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk1" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk1"><span class="kn">From</span> VLSM.Lib <span class="kn">Require Import</span> ListExtras StdppExtras.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message">[Loading ML file coq-itauto.plugin ... <span class="bp">done</span>]</blockquote></div></div></small></span></pre><div class="doc">
+<a id="lab1"></a><h1 class="section">Utility: Non-Empty Lists</h1>
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --></pre><div class="doc">
+<a id="lab2"></a><h2 class="section">Positive definition</h2>
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --></pre><div class="doc">
+  A straight-forward inductive definition of non-empty lists akin to the usual
+  list: a non-empty list is either a singleton or a cons that has a head and a
+  tail.
+
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Inductive</span> <span class="nf">ne_list</span> (<span class="nv">A</span> : <span class="kt">Type</span>) : <span class="kt">Type</span> :=
+| nel_singl : A -&gt; ne_list A
+| nel_cons : A -&gt; ne_list A -&gt; ne_list A.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> nel_singl  {_} _ : <span class="nb">assert</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> nel_cons {_} _ _ : <span class="nb">assert</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Infix</span> <span class="s2">&quot;:::&quot;</span> := nel_cons (<span class="kn">at level</span> <span class="mi">60</span>, <span class="kn">right associativity</span>).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_hd</span> {<span class="nv">A</span>} (<span class="nv">l</span> : ne_list A) : A :=
+  <span class="kr">match</span> l <span class="kr">with</span>
+  | nel_singl a =&gt; a
+  | nel_cons a _ =&gt; a
+  <span class="kr">end</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_tl</span> {<span class="nv">A</span>} (<span class="nv">l</span> : ne_list A) : option (ne_list A) :=
+  <span class="kr">match</span> l <span class="kr">with</span>
+  | nel_singl _ =&gt; None
+  | nel_cons _ tl =&gt; Some tl
+  <span class="kr">end</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_foldr</span> {<span class="nv">A</span> <span class="nv">B</span>} (<span class="nv">f</span> : A -&gt; B -&gt; B) (<span class="nv">b</span> : B) (<span class="nv">l</span> : ne_list A) :=
+  (<span class="kr">fix</span> <span class="nb">fold</span> (l : ne_list A) :=
+    <span class="kr">match</span> l <span class="kr">with</span>
+    | nel_singl a =&gt; f a b
+    | nel_cons a tl =&gt; f a (<span class="nb">fold</span> tl)
+    <span class="kr">end</span>) l.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_app</span> {<span class="nv">A</span>} (<span class="nv">l1</span> <span class="nv">l2</span> : ne_list A) := ne_list_foldr nel_cons l2 l1.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input">#[export] <span class="kn">Instance</span> <span class="nf">ne_list_ret</span> : MRet ne_list := @nel_singl.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input">#[export] <span class="kn">Instance</span> <span class="nf">ne_list_bind</span> : MBind ne_list :=
+  <span class="kr">fun</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">f</span> <span class="nv">l</span> =&gt; (<span class="kr">fix</span> bind (l : ne_list A) :=
+    <span class="kr">match</span> l <span class="kr">with</span>
+    | nel_singl a =&gt; f a
+    | nel_cons a tl =&gt; ne_list_app (f a) (bind tl)
+    <span class="kr">end</span>) l.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input">#[export] <span class="kn">Instance</span> <span class="nf">ne_list_fmap</span>  : FMap ne_list :=
+  <span class="kr">fun</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">f</span> =&gt; mbind (mret ∘ f).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input">#[export] <span class="kn">Instance</span> <span class="nf">ne_list_join</span> : MJoin ne_list :=
+  <span class="kr">fun</span> <span class="nv">A</span> =&gt; mbind id.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Inductive</span> <span class="nf">ne_list_equiv</span> `{Equiv A} : Equiv (ne_list A) :=
+| ne_one_equiv x y : x ≡ y -&gt; nel_singl x ≡ nel_singl y
+| ne_cons_equiv x y l k : x ≡ y -&gt; l ≡ k -&gt; x ::: l ≡ y ::: k.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_to_list</span> {<span class="nv">A</span>} (<span class="nv">nel</span> : ne_list A) : list A :=
+  ne_list_foldr cons [] nel.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_length</span> {<span class="nv">A</span>} (<span class="nv">nel</span> : ne_list A) := length (ne_list_to_list nel).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk2" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk2"><span class="kn">Lemma</span> <span class="nf">ne_list_min_length</span> {<span class="nv">A</span>} (<span class="nv">nel</span> : ne_list A) : <span class="mi">1</span> &lt;= ne_list_length nel.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>nel</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> ≤ ne_list_length nel</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk3" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk3"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>nel</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> ≤ ne_list_length nel</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">destruct</span> nel; <span class="nb">cbn</span>; <span class="bp">lia</span>.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk4" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk4"><span class="kn">Lemma</span> <span class="nf">ne_list_to_list_unroll</span> {<span class="nv">A</span>} (<span class="nv">a</span> : A) (<span class="nv">tl</span> : ne_list A) :
+  ne_list_to_list (a ::: tl) = a :: ne_list_to_list tl.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>tl</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_list (a ::: tl) = a :: ne_list_to_list tl</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk5" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk5"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>tl</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_list (a ::: tl) = a :: ne_list_to_list tl</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">done</span>.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_to_list_tl</span> {<span class="nv">A</span>} (<span class="nv">l</span> : ne_list A) : list A :=
+  <span class="kr">match</span> l <span class="kr">with</span>
+  | nel_singl _ =&gt; []
+  | nel_cons _ tl =&gt; ne_list_to_list tl
+  <span class="kr">end</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_option_cons</span> {<span class="nv">A</span>} (<span class="nv">a</span> : A) (<span class="nv">mnel</span> : option (ne_list A)) : ne_list A :=
+  from_option (nel_cons a) (nel_singl a) mnel.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">list_to_option_ne_list</span> {<span class="nv">A</span>} (<span class="nv">l</span> : list A) : option (ne_list A) :=
+  foldr (<span class="kr">fun</span> <span class="nv">a</span> <span class="nv">mnel</span> =&gt; Some (ne_list_option_cons a mnel)) None l.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk6" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk6"><span class="kn">Lemma</span> <span class="nf">list_to_option_ne_list_unroll</span> {<span class="nv">A</span>} (<span class="nv">a</span> : A) <span class="nv">l</span> :
+  list_to_option_ne_list (a :: l) = Some (ne_list_option_cons a (list_to_option_ne_list l)).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">list_to_option_ne_list (a :: l) =
+Some
+  (ne_list_option_cons a (list_to_option_ne_list l))</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk7" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk7"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">list_to_option_ne_list (a :: l) =
+Some
+  (ne_list_option_cons a (list_to_option_ne_list l))</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">done</span>.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span></span></pre><div class="doc">
+<a id="lab3"></a><h2 class="section">List-based definition</h2>
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --></pre><div class="doc">
+A definition of non-empty lists based on lists. 
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Record</span> <span class="nf">NeList</span> (<span class="nv">A</span> : <span class="kt">Type</span>) : <span class="kt">Type</span> :=
+{
+  nl_hd : A;
+  nl_tl : list A;
+}.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> nl_hd {_} _ : <span class="nb">assert</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> nl_tl {_} _ : <span class="nb">assert</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_to_NeList</span> {<span class="nv">A</span>} (<span class="nv">l</span> : ne_list A) : NeList A :=
+{|
+  nl_hd := ne_list_hd l;
+  nl_tl := ne_list_to_list_tl l;
+|}.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">NeList_to_ne_list</span> {<span class="nv">A</span>} (<span class="nv">l</span> : NeList A) : ne_list A :=
+  ne_list_option_cons (nl_hd l) (list_to_option_ne_list (nl_tl l)).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk8" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk8"><span class="kn">Lemma</span> <span class="nf">NeList_to_ne_list_unroll</span> {<span class="nv">A</span>} (<span class="nv">a</span> <span class="nv">b</span> : A) (<span class="nv">l</span> : list A) :
+  NeList_to_ne_list {| nl_hd := a; nl_tl := b :: l |}
+    =
+  nel_cons a (NeList_to_ne_list {| nl_hd := b; nl_tl := l |}).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a, b</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">NeList_to_ne_list {| nl_hd := a; nl_tl := b :: l |} =
+a ::: NeList_to_ne_list {| nl_hd := b; nl_tl := l |}</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk9" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk9"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a, b</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">NeList_to_ne_list {| nl_hd := a; nl_tl := b :: l |} =
+a ::: NeList_to_ne_list {| nl_hd := b; nl_tl := l |}</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">done</span>.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chka" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chka"><span class="kn">Lemma</span> <span class="nf">NeList_to_ne_list_to_list</span> {<span class="nv">A</span>} :
+  <span class="kr">forall</span> (<span class="nv">l</span> : NeList A),
+    ne_list_to_list (NeList_to_ne_list l) = nl_hd l :: nl_tl l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">l</span> : NeList A,
+  ne_list_to_list (NeList_to_ne_list l) =
+  nl_hd l :: nl_tl l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chkb" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chkb"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">l</span> : NeList A,
+  ne_list_to_list (NeList_to_ne_list l) =
+  nl_hd l :: nl_tl l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chkc" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chkc"><span class="nb">intros</span> [h t]; <span class="nb">revert</span> h; <span class="nb">induction</span> t; <span class="nb">intros</span>; [<span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>t</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br><span><var>IHt</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">h</span> : A,
+ne_list_to_list (NeList_to_ne_list {| nl_hd := h; nl_tl := t |}) =
+nl_hd {| nl_hd := h; nl_tl := t |} :: nl_tl {| nl_hd := h; nl_tl := t |}</span></span></span><br><span><var>h</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_list
+  (NeList_to_ne_list {| nl_hd := h; nl_tl := a :: t |}) =
+nl_hd {| nl_hd := h; nl_tl := a :: t |}
+:: nl_tl {| nl_hd := h; nl_tl := a :: t |}</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> NeList_to_ne_list_unroll, ne_list_to_list_unroll, IHt.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chkd" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chkd"><span class="kn">Lemma</span> <span class="nf">NeList_to_ne_list_to_NeList</span> {<span class="nv">A</span>} :
+  <span class="kr">forall</span> (<span class="nv">l</span> : NeList A),
+    ne_list_to_NeList (NeList_to_ne_list l) = l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">l</span> : NeList A,
+  ne_list_to_NeList (NeList_to_ne_list l) = l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chke" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chke"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">l</span> : NeList A,
+  ne_list_to_NeList (NeList_to_ne_list l) = l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chkf" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chkf"><span class="nb">intros</span> [h1 [| h2 t]]; [<span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>h1, h2</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>t</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_NeList
+  (NeList_to_ne_list
+     {| nl_hd := h1; nl_tl := h2 :: t |}) =
+{| nl_hd := h1; nl_tl := h2 :: t |}</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk10" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk10"><span class="nb">rewrite</span> NeList_to_ne_list_unroll.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>h1, h2</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>t</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_NeList
+  (h1
+   ::: NeList_to_ne_list {| nl_hd := h2; nl_tl := t |}) =
+{| nl_hd := h1; nl_tl := h2 :: t |}</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk11" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk11"><span class="nb">unfold</span> ne_list_to_NeList; <span class="nb">f_equal</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>h1, h2</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>t</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_list_tl
+  (h1
+   ::: NeList_to_ne_list {| nl_hd := h2; nl_tl := t |}) =
+h2 :: t</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span> NeList_to_ne_list_to_list.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk12" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk12"><span class="kn">Lemma</span> <span class="nf">ne_list_to_list_to_nelist</span> {<span class="nv">A</span>} :
+  <span class="kr">forall</span> (<span class="nv">l</span> : ne_list A),
+    list_to_option_ne_list (ne_list_to_list l) = Some l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">l</span> : ne_list A,
+  list_to_option_ne_list (ne_list_to_list l) = Some l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk13" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk13"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">l</span> : ne_list A,
+  list_to_option_ne_list (ne_list_to_list l) = Some l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk14" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk14"><span class="nb">induction</span> l; [<span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br><span><var>IHl</var><span class="hyp-type"><b>: </b><span>list_to_option_ne_list (ne_list_to_list l) = Some l</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">list_to_option_ne_list (ne_list_to_list (a ::: l)) =
+Some (a ::: l)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk15" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk15"><span class="nb">rewrite</span> ne_list_to_list_unroll, list_to_option_ne_list_unroll.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br><span><var>IHl</var><span class="hyp-type"><b>: </b><span>list_to_option_ne_list (ne_list_to_list l) = Some l</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Some
+  (ne_list_option_cons a
+     (list_to_option_ne_list (ne_list_to_list l))) =
+Some (a ::: l)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> IHl.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk16" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk16"><span class="kn">Lemma</span> <span class="nf">ne_list_to_NeList_to_ne_list</span> {<span class="nv">A</span>} :
+  <span class="kr">forall</span> (<span class="nv">l</span> : ne_list A),
+    NeList_to_ne_list (ne_list_to_NeList l) = l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">l</span> : ne_list A,
+  NeList_to_ne_list (ne_list_to_NeList l) = l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk17" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk17"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">∀</span> <span class="nv">l</span> : ne_list A,
+  NeList_to_ne_list (ne_list_to_NeList l) = l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk18" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk18"><span class="nb">intros</span> [a | a n]; [<span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">NeList_to_ne_list (ne_list_to_NeList (a ::: n)) =
+a ::: n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk19" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk19"><span class="nb">unfold</span> ne_list_to_NeList, NeList_to_ne_list, nl_hd, nl_tl, ne_list_hd, ne_list_to_list_tl.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_option_cons a
+  (list_to_option_ne_list (ne_list_to_list n)) =
+a ::: n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> ne_list_to_list_to_nelist.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input">#[export] <span class="kn">Instance</span> <span class="nf">elem_of_ne_list</span> {<span class="nv">A</span>} : ElemOf A (ne_list A) :=
+  <span class="kr">fun</span> <span class="nv">a</span> <span class="nv">nel</span> =&gt; a ∈ ne_list_to_list nel.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input">#[export] <span class="kn">Instance</span> <span class="nf">ne_list_subseteq</span> {<span class="nv">A</span>} : SubsetEq (ne_list A) :=
+  <span class="kr">fun</span> <span class="nv">l1</span> <span class="nv">l2</span> =&gt; <span class="kr">forall</span> <span class="nv">x</span>, x ∈ l1 -&gt; x ∈ l2.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk1a" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk1a">#[export] <span class="kn">Instance</span> <span class="nf">elem_of_ne_list_dec</span> `{dec : EqDecision A} :
+  RelDecision (∈@{ne_list A}).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>dec</var><span class="hyp-type"><b>: </b><span>EqDecision A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">RelDecision elem_of</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk1b" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk1b"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>dec</var><span class="hyp-type"><b>: </b><span>EqDecision A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">RelDecision elem_of</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk1c" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk1c"><span class="nb">intros</span> a l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>dec</var><span class="hyp-type"><b>: </b><span>EqDecision A</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Decision (a ∈ l)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk1d" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk1d"><span class="nb">unfold</span> elem_of, elem_of_ne_list; <span class="nb">cbn</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>dec</var><span class="hyp-type"><b>: </b><span>EqDecision A</span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Decision (a ∈ ne_list_to_list l)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">typeclasses eauto</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">ne_list_from_non_empty_list</span> {<span class="nv">A</span>} (<span class="nv">l</span> : list A) : l &lt;&gt; [] -&gt; ne_list A :=
+  <span class="kr">match</span> l <span class="kr">with</span>
+  | [] =&gt; <span class="kr">fun</span> <span class="nv">H</span> =&gt; False_rect _ (H eq_refl)
+  | a :: l&#39; =&gt; <span class="kr">fun</span> <span class="nv">_</span> =&gt; NeList_to_ne_list {| nl_hd := a; nl_tl := l&#39; |}
+  <span class="kr">end</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">list_function_restriction</span> {<span class="nv">A</span> <span class="nv">B</span>} (<span class="nv">f</span> : A -&gt; list B)
+  (<span class="nv">da</span> : dsig (<span class="kr">fun</span> <span class="nv">a</span> =&gt; f a &lt;&gt; [])) : ne_list B :=
+  ne_list_from_non_empty_list (f (` da)) (proj2_dsig da).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk1e" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk1e"><span class="kn">Lemma</span> <span class="nf">list_filter_map_mbind</span>
+  {<span class="nv">A</span> <span class="nv">B</span> : <span class="kt">Type</span>}
+  (<span class="nv">f</span> : A -&gt; list B)
+
+  (<span class="nv">l</span> : list A)
+  : mjoin (map ne_list_to_list
+      (list_filter_map (<span class="kr">fun</span> <span class="nv">a</span> =&gt; f a &lt;&gt; []) (list_function_restriction f) l))
+    = mbind f l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">mjoin
+  (map ne_list_to_list
+     (list_filter_map (<span class="kr">λ</span> <span class="nv">a</span> : A, f a ≠ [])
+        (list_function_restriction f) l)) = l ≫= f</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk1f" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk1f"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">mjoin
+  (map ne_list_to_list
+     (list_filter_map (<span class="kr">λ</span> <span class="nv">a</span> : A, f a ≠ [])
+        (list_function_restriction f) l)) = l ≫= f</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk20" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk20"><span class="nb">induction</span> l <span class="nb">using</span> rev_ind; [<span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br><span><var>IHl</var><span class="hyp-type"><b>: </b><span>mjoin
+(map ne_list_to_list
+(list_filter_map (<span class="kr">λ</span> <span class="nv">a</span> : A, f a ≠ []) (list_function_restriction f) l)) =
+l ≫= f</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">mjoin
+  (map ne_list_to_list
+     (list_filter_map (<span class="kr">λ</span> <span class="nv">a</span> : A, f a ≠ [])
+        (list_function_restriction f) (l ++ [x]))) =
+(l ++ [x]) ≫= f</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk21" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk21"><span class="nb">rewrite</span> mbind_app, list_filter_map_app, map_app, mjoin_app, IHl.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br><span><var>IHl</var><span class="hyp-type"><b>: </b><span>mjoin
+(map ne_list_to_list
+(list_filter_map (<span class="kr">λ</span> <span class="nv">a</span> : A, f a ≠ []) (list_function_restriction f) l)) =
+l ≫= f</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(l ≫= f) ++
+mjoin
+  (map ne_list_to_list
+     (list_filter_map (<span class="kr">λ</span> <span class="nv">a</span> : A, f a ≠ [])
+        (list_function_restriction f) [x])) =
+(l ≫= f) ++ [x] ≫= f</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk22" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk22"><span class="nb">cbn</span>; <span class="nb">clear</span> IHl.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(l ≫= f) ++
+mjoin
+  (map ne_list_to_list
+     (map (list_function_restriction f)
+        <span class="kr">match</span> decide (f x ≠ []) <span class="kr">with</span>
+        | <span class="nb">left</span> p =&gt; [dexist x p]
+        | <span class="nb">right</span> _ =&gt; []
+        <span class="kr">end</span>)) = (l ≫= f) ++ f x ++ []</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk23" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk23"><span class="nb">f_equal</span>; <span class="nb">rewrite</span> app_nil_r.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">mjoin
+  (map ne_list_to_list
+     (map (list_function_restriction f)
+        <span class="kr">match</span> decide (f x ≠ []) <span class="kr">with</span>
+        | <span class="nb">left</span> p =&gt; [dexist x p]
+        | <span class="nb">right</span> _ =&gt; []
+        <span class="kr">end</span>)) = f x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk24" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk24"><span class="nb">destruct</span> (decide _) <span class="kr">as</span> [Hfx | Hnfx]; <span class="nb">cbn</span>;
+    [| <span class="bp">by</span> <span class="nb">destruct</span> (decide (f x = []))].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br><span><var>Hfx</var><span class="hyp-type"><b>: </b><span>f x ≠ []</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_list
+  (list_function_restriction f (dexist x Hfx)) ++ [] =
+f x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk25" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk25"><span class="nb">unfold</span> list_function_restriction, ne_list_from_non_empty_list; <span class="nb">cbn</span> <span class="kr">in</span> Hfx.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br><span><var>Hfx</var><span class="hyp-type"><b>: </b><span>f x ≠ []</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_list
+  (<span class="kr">match</span>
+     f (`(dexist x Hfx)) <span class="kr">as</span> l
+     <span class="kr">return</span> (l ≠ [] → ne_list B)
+   <span class="kr">with</span>
+   | [] =&gt;
+       <span class="kr">λ</span> <span class="nv">H</span> : [] ≠ [],
+         False_rect (ne_list B) (H eq_refl)
+   | a :: l&#39; =&gt;
+       <span class="kr">λ</span> <span class="nv">_</span> : a :: l&#39; ≠ [],
+         NeList_to_ne_list
+           {| nl_hd := a; nl_tl := l&#39; |}
+   <span class="kr">end</span> (proj2_dsig (dexist x Hfx))) ++ [] = f x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk26" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk26"><span class="nb">remember</span> (proj2_dsig _) <span class="kr">as</span> Hp; <span class="nb">clear</span> HeqHp; <span class="nb">cbn</span> <span class="kr">in</span> Hp.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br><span><var>Hfx, Hp</var><span class="hyp-type"><b>: </b><span>f x ≠ []</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_list
+  (<span class="kr">match</span>
+     f (`(dexist x Hfx)) <span class="kr">as</span> l
+     <span class="kr">return</span> (l ≠ [] → ne_list B)
+   <span class="kr">with</span>
+   | [] =&gt;
+       <span class="kr">λ</span> <span class="nv">H</span> : [] ≠ [],
+         False_rect (ne_list B) (H eq_refl)
+   | a :: l&#39; =&gt;
+       <span class="kr">λ</span> <span class="nv">_</span> : a :: l&#39; ≠ [],
+         NeList_to_ne_list
+           {| nl_hd := a; nl_tl := l&#39; |}
+   <span class="kr">end</span> Hp) ++ [] = f x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk27" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk27"><span class="nb">simpl</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br><span><var>Hfx, Hp</var><span class="hyp-type"><b>: </b><span>f x ≠ []</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_list
+  (<span class="kr">match</span> f x <span class="kr">as</span> l <span class="kr">return</span> (l ≠ [] → ne_list B) <span class="kr">with</span>
+   | [] =&gt;
+       <span class="kr">λ</span> <span class="nv">H</span> : [] ≠ [],
+         False_rect (ne_list B) (H eq_refl)
+   | a :: l&#39; =&gt;
+       <span class="kr">λ</span> <span class="nv">_</span> : a :: l&#39; ≠ [],
+         NeList_to_ne_list
+           {| nl_hd := a; nl_tl := l&#39; |}
+   <span class="kr">end</span> Hp) ++ [] = f x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk28" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk28"><span class="nb">destruct</span> (f x); [<span class="bp">done</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A, B</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>f</var><span class="hyp-type"><b>: </b><span>A → list B</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list A</span></span></span><br><span><var>b</var><span class="hyp-type"><b>: </b><span>B</span></span></span><br><span><var>l0</var><span class="hyp-type"><b>: </b><span>list B</span></span></span><br><span><var>Hfx, Hp</var><span class="hyp-type"><b>: </b><span>b :: l0 ≠ []</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_list
+  (NeList_to_ne_list {| nl_hd := b; nl_tl := l0 |}) ++
+[] = b :: l0</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> NeList_to_ne_list_to_list, app_nil_r.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk29" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk29"><span class="kn">Lemma</span> <span class="nf">ne_list_concat_min_length</span>
+  {<span class="nv">A</span> : <span class="kt">Type</span>}
+  (<span class="nv">l</span> : list (ne_list A))
+  : length (mjoin (map ne_list_to_list l)) &gt;= length l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list (ne_list A)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">length (mjoin (map ne_list_to_list l)) ≥ length l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk2a" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk2a"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list (ne_list A)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">length (mjoin (map ne_list_to_list l)) ≥ length l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk2b" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk2b"><span class="nb">induction</span> l; <span class="nb">cbn</span>; [<span class="bp">by</span> <span class="bp">lia</span> |].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list (ne_list A)</span></span></span><br><span><var>IHl</var><span class="hyp-type"><b>: </b><span>length (mjoin (map ne_list_to_list l)) ≥ length l</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">length
+  (ne_list_to_list a ++ mjoin (map ne_list_to_list l))
+≥ S (length l)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk2c" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk2c"><span class="nb">rewrite</span> app_length.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list (ne_list A)</span></span></span><br><span><var>IHl</var><span class="hyp-type"><b>: </b><span>length (mjoin (map ne_list_to_list l)) ≥ length l</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">length (ne_list_to_list a) +
+length (mjoin (map ne_list_to_list l)) ≥ S (length l)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  <span class="c">(* by specialize (ne_list_min_length a); unfold ne_list_length; lia. *)</span>
+  <span class="c">(* for some strange reason the line above does not work, so... this hack: *)</span>
+</span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk2d" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk2d"><span class="nb">assert</span> (Hle : <span class="kr">forall</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span>, a &gt;= <span class="mi">1</span> -&gt; b &gt;= c -&gt; a + b &gt;= S c) <span class="bp">by</span> <span class="bp">lia</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>a</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>list (ne_list A)</span></span></span><br><span><var>IHl</var><span class="hyp-type"><b>: </b><span>length (mjoin (map ne_list_to_list l)) ≥ length l</span></span></span><br><span><var>Hle</var><span class="hyp-type"><b>: </b><span><span class="kr">∀</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span> : nat, a ≥ <span class="mi">1</span> → b ≥ c → a + b ≥ S c</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">length (ne_list_to_list a) +
+length (mjoin (map ne_list_to_list l)) ≥ S (length l)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span> Hle; [<span class="nb">apply</span> ne_list_min_length |].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span></span></pre><div class="doc">
+<a id="lab4"></a><h2 class="section">Negative definition</h2>
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --></pre><div class="doc">
+  An alternative inductive definition of non-empty lists as a record which
+  has a head and an optional tail.
+
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Inductive</span> <span class="nf">NonEmptyList</span> (<span class="nv">A</span> : <span class="kt">Type</span>) : <span class="kt">Type</span> := NEL_cons
+{
+  nel_hd : A;
+  nel_tl : option (NonEmptyList A)
+}.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> nel_hd {_} _ : <span class="nb">assert</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> nel_tl {_} _ : <span class="nb">assert</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> NEL_cons {_} _ _ : <span class="nb">assert</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input">#[export] <span class="kn">Instance</span> <span class="nf">NonEmptyList_inhabited</span> `{Inhabited A} : Inhabited (NonEmptyList A) :=
+  populate (NEL_cons inhabitant None).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">NEL_singl</span> `(a : A) : NonEmptyList A := NEL_cons a None.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Fixpoint</span> <span class="nf">NonEmptyList_ind&#39;</span>
+  (<span class="nv">A</span> : <span class="kt">Type</span>) (<span class="nv">P</span> : NonEmptyList A -&gt; <span class="kt">Prop</span>)
+  (<span class="nv">hd&#39;</span> : <span class="kr">forall</span> <span class="nv">h</span> : A, P (NEL_cons h None))
+  (<span class="nv">tl&#39;</span> : <span class="kr">forall</span> (<span class="nv">h</span> : A) (<span class="nv">t</span> : NonEmptyList A), P t -&gt; P (NEL_cons h (Some t)))
+  (<span class="nv">l</span> : NonEmptyList A) {<span class="nv">struct</span> <span class="nv">l</span>} : P l :=
+  <span class="kr">match</span> l <span class="kr">with</span>
+  | NEL_cons h None =&gt; hd&#39; h
+  | NEL_cons h (Some t) =&gt; tl&#39; h t (NonEmptyList_ind&#39; A P hd&#39; tl&#39; t)
+  <span class="kr">end</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Fixpoint</span> <span class="nf">NonEmptyList_to_ne_list</span> `(l : NonEmptyList A) : ne_list A :=
+  <span class="kr">match</span> nel_tl l <span class="kr">with</span>
+  | None =&gt; nel_singl (nel_hd l)
+  | Some l&#39; =&gt; nel_cons (nel_hd l) (NonEmptyList_to_ne_list l&#39;)
+  <span class="kr">end</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Fixpoint</span> <span class="nf">ne_list_to_NonEmptyList</span> `(l : ne_list A) : NonEmptyList A :=
+  <span class="kr">match</span> l <span class="kr">with</span>
+  | nel_singl a =&gt; NEL_singl a
+  | nel_cons a l&#39; =&gt; NEL_cons a (Some (ne_list_to_NonEmptyList l&#39;))
+  <span class="kr">end</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk2e" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk2e"><span class="kn">Lemma</span> <span class="nf">NonEmptyList_to_ne_list_to_NonEmptyList</span> `(l : NonEmptyList A) :
+  ne_list_to_NonEmptyList (NonEmptyList_to_ne_list l) = l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>NonEmptyList A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_NonEmptyList (NonEmptyList_to_ne_list l) =
+l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk2f" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk2f"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>NonEmptyList A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">ne_list_to_NonEmptyList (NonEmptyList_to_ne_list l) =
+l</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">induction</span> l <span class="nb">using</span> NonEmptyList_ind&#39;; <span class="nb">cbn</span>; [| <span class="nb">rewrite</span> IHl].</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk30" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk30"><span class="kn">Lemma</span> <span class="nf">ne_list_to_NonEmptyList_to_ne_list</span> `(l : ne_list A) :
+  NonEmptyList_to_ne_list (ne_list_to_NonEmptyList l) = l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">NonEmptyList_to_ne_list (ne_list_to_NonEmptyList l) =
+l</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><input class="alectryon-toggle" id="NeList-v-chk31" style="display: none" type="checkbox"><label class="alectryon-input" for="NeList-v-chk31"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>A</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>ne_list A</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">NonEmptyList_to_ne_list (ne_list_to_NonEmptyList l) =
+l</div></blockquote></div></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">induction</span> l; <span class="nb">cbn</span>; [| <span class="nb">rewrite</span> IHl].</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span></span></pre></article></body></html>

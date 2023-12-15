@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>EquationsExtras.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-windowed alectryon-coqdoc"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.18.0+0.18.1. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><input class="alectryon-toggle" id="EquationsExtras-v-chk0" style="display: none" type="checkbox"><label class="alectryon-input" for="EquationsExtras-v-chk0"><span class="kn">From</span> <span class="kn">Equations</span> <span class="nf">Require</span> <span class="nv">Export</span> <span class="nv">Equations</span>.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message">[Loading ML file extraction_plugin.cmxs (<span class="nb">using</span> legacy method) ... <span class="bp">done</span>]</blockquote><blockquote class="alectryon-message">[Loading ML file equations_plugin.cmxs (<span class="nb">using</span> legacy method) ... <span class="bp">done</span>]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Export</span> <span class="kn">Equations</span>.<span class="kt">Prop</span>.Logic.</span></span></pre><div class="doc">
+<a id="lab1"></a><h1 class="section">Utility: Equations Definitions</h1>
+<div class="paragraph"> </div>
+
+  The <span class="inlinecode"><span class="id" title="var">inspect</span></span> definition is used to pack a value with a proof
+  of an equality to itself. When pattern matching on the first component in
+  this existential type, we keep information about the origin of the pattern
+  available in the second component, the equality.
+
+<div class="paragraph"> </div>
+
+  See
+  <a &gt;="" &lt;="" <="" a&gt;.="" div="" here="" href="https://github.com/mattam82/Coq-Equations/blob/v1.3-8.16/examples/Basics.vL527">
+<div class="code">
+</div>
+</a></div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Notation</span> <span class="s2">&quot;x &#39;eq:&#39; p&quot;</span> := (exist _ x p) (<span class="kn">only parsing</span>, <span class="kn">at level</span> <span class="mi">20</span>).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* required for documentation generation *)</span>
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">iYC2</span> := <span class="kt">True</span>.</span></span></pre></article></body></html>
